@@ -10,6 +10,25 @@ from datetime import datetime
 GENERIC_EMAILS = {"", "noreply", "users.noreply.github.com"}
 WEAK_MESSAGES = {"commit","update","fix","wip","test","ok","done",".","..","...","feat","add","init","initial"}
 
+# Language-agnostic action verb detection (English + French)
+_ACTION_VERBS_RE = re.compile(
+    r"\b(add|fix|remove|update|refactor|implement|create|delete|change|improve|rename|move|merge|revert|"
+    r"ajoute[rz]?|corrige[rz]?|supprime[rz]?|modifie[rz]?|impl[eé]mente[rz]?|cr[eé][eé][rz]?|"
+    r"d[eé]place[rz]?|remplace[rz]?|r[eé]sout|r[eé]soudre|r[eé][eé]crit|initialise[rz]?|int[eè]gre[rz]?)\b",
+    re.IGNORECASE,
+)
+
+# Conventional Commits pattern (EN type names, case-insensitive, with optional scope and !)
+_CONVENTIONAL_RE = re.compile(
+    r"^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?!?:\s.{2,}",
+    re.IGNORECASE,
+)
+
+# Alternative convention patterns: [TYPE] desc, #ref - desc, ALL_CAPS: desc
+_ALT_CONVENTION_RE = re.compile(
+    r"^(\[[A-Z][A-Z0-9_-]+\]\s.{5,}|#\d+\s*-\s*.{5,}|[A-Z]{2}[A-Z0-9_]*:\s.{5,})"
+)
+
 def normalize_name(name: str) -> str:
     name = name.strip().lower()
     name = unicodedata.normalize("NFD", name)
@@ -19,17 +38,20 @@ def normalize_name(name: str) -> str:
 
 def score_message(msg: str) -> int:
     msg = msg.strip()
+    # Score 0: empty, ≤ 3 chars, or purely generic
     if len(msg) <= 3 or msg.lower() in WEAK_MESSAGES:
         return 0
-    if len(msg) < 15:
-        return 1
-    # Conventional commits pattern
-    if re.match(r"^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?!?:\s.+", msg):
+    # Score 3: matches a clear convention (Conventional Commits or coherent alternative)
+    if _CONVENTIONAL_RE.match(msg) or _ALT_CONVENTION_RE.match(msg):
         return 3
-    if len(msg) >= 40:
-        return 2
-    # Has a verb-like word
-    if re.search(r"\b(add|fix|remove|update|refactor|implement|create|delete|change|improve|rename|move|merge|revert)\b", msg.lower()):
+    # Score 3: long and clearly informative (verb + context)
+    if len(msg) >= 40 and _ACTION_VERBS_RE.search(msg):
+        return 3
+    # Score 1: very short with no recognizable verb
+    if len(msg) < 10:
+        return 1
+    # Score 2: informative in any language — has a verb, or long enough
+    if _ACTION_VERBS_RE.search(msg) or len(msg) >= 40:
         return 2
     return 1
 

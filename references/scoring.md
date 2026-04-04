@@ -2,14 +2,14 @@
 
 ## Qualité des messages de commit (score 0–3)
 
-> **⚠️ Principe directeur** : Le scoring évalue la **clarté et l'utilité** du message, pas sa longueur ni sa langue. Un message en français, en espagnol ou en anglais peut obtenir le score maximum si il est clair et informatif.
+> **⚠️ Principe directeur** : Le scoring évalue la **clarté et l'utilité** du message, pas sa longueur ni sa langue. Un message en français, en espagnol ou en anglais peut obtenir le score maximum s'il est clair et informatif.
 
 | Score | Label | Critères |
 |---|---|---|
 | **3** ⭐⭐⭐ | Excellent | Message explicite : verbe d'action + contexte + pourquoi. Ex : `fix(auth): correct token expiry` / `Corrige la fuite mémoire dans le parser` / `[FEATURE] #42 - Ajout du login OAuth` |
 | **2** ⭐⭐ | Correct | Message court mais compréhensible — on sait ce qui a changé. Ex : `add login page`, `fix null pointer`, `Ajoute la page de connexion` |
-| **1** ⭐ | Insuffisant | Message vague ou trop court pour comprendre le changement. Ex : `fix`, `wip`, `update`, `ok`, `asdfgh` |
-| **0** ⚠️ | Inexistant/Inutile | Message vide, un seul caractère, ou copié-collé de la commande. Ex : `""`, `.`, `commit` |
+| **1** ⭐ | Insuffisant | Message vague ou trop court pour comprendre le changement. Ex : `asdfgh`, `changes`, `modif` |
+| **0** ⚠️ | Inexistant/Inutile | Message vide, ≤ 3 caractères, ou purement générique. Ex : `""`, `.`, `fix`, `wip`, `ok`, `commit` |
 
 **Heuristiques de détection automatique (langue-agnostiques) :**
 - Score 0 : `len(message) <= 3` ou message dans la liste de mots vides (`commit`, `wip`, `test`, `ok`, `done`, `.`, `..`)
@@ -35,6 +35,8 @@ Le skill supporte trois modes de scoring des messages :
 | Conventional Commits | `conventional` (défaut) | Valorise `type(scope): description`, accepte EN et FR |
 | Libre mais clair | `free` | Valorise tout message informatif, quelle que soit la convention |
 | Convention personnalisée | `custom` | L'enseignant précise sa convention, le skill adapte le scoring |
+
+> **Note** : ce paramètre est conversationnel — il permet à l'enseignant de contextualiser la demande et peut être mentionné dans le rapport. La détection automatique des conventions alternatives (`[TYPE]`, `#ref -`, `TYPE:`) et des verbes en français est implémentée dans le script `analyze.py`.
 
 En mode `free`, un message comme `"Réunion d'équipe — on a décidé de réécrire l'auth"` obtient score 2 même sans convention formelle.
 
