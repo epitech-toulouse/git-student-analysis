@@ -11,8 +11,53 @@
 #
 # Prérequis : git >= 2.18 (pour %(trailers:...))
 
-REPO_PATH="${1:-.}"
-BRANCH="${2:-HEAD}"
+REPO_PATH="."
+BRANCH="HEAD"
+INCLUDE_MERGES=""
+POSITIONAL_COUNT=0
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --include-merges)
+            INCLUDE_MERGES="--include-merges"
+            ;;
+        --)
+            shift
+            while [ "$#" -gt 0 ]; do
+                POSITIONAL_COUNT=$((POSITIONAL_COUNT + 1))
+                case "$POSITIONAL_COUNT" in
+                    1) REPO_PATH="$1" ;;
+                    2) BRANCH="$1" ;;
+                    *)
+                        echo "ERROR: too many arguments" >&2
+                        echo "Usage: bash extract_commits.sh [--include-merges] <repo_path> [branch]" >&2
+                        exit 1
+                        ;;
+                esac
+                shift
+            done
+            break
+            ;;
+        -*)
+            echo "ERROR: unknown option: $1" >&2
+            echo "Usage: bash extract_commits.sh [--include-merges] <repo_path> [branch]" >&2
+            exit 1
+            ;;
+        *)
+            POSITIONAL_COUNT=$((POSITIONAL_COUNT + 1))
+            case "$POSITIONAL_COUNT" in
+                1) REPO_PATH="$1" ;;
+                2) BRANCH="$1" ;;
+                *)
+                    echo "ERROR: too many arguments" >&2
+                    echo "Usage: bash extract_commits.sh [--include-merges] <repo_path> [branch]" >&2
+                    exit 1
+                    ;;
+            esac
+            ;;
+    esac
+    shift
+done
 
 cd "$REPO_PATH" || { echo "ERROR: cannot cd to $REPO_PATH" >&2; exit 1; }
 
