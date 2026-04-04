@@ -68,7 +68,7 @@ def parse_tsv(path: str) -> list[dict]:
     commits = []
     with open(path) as f:
         for line in f:
-            parts = line.rstrip("\n").split("|", 7)
+            parts = line.rstrip("\n").split("|", 8)
             if len(parts) < 8:
                 continue
             commits.append({
@@ -80,6 +80,7 @@ def parse_tsv(path: str) -> list[dict]:
                 "deletions": int(parts[5]) if parts[5].isdigit() else 0,
                 "files_changed": int(parts[6]) if parts[6].isdigit() else 0,
                 "message": parts[7],
+                "row_type": parts[8].strip() if len(parts) >= 9 else "author",
             })
     return commits
 
@@ -126,7 +127,7 @@ def analyze(tsv_path: str, mapping_path: str = None) -> dict:
         else:
             canonical_names[key] = select_canonical_name(clist)
 
-    total_commits = len(commits)
+    total_commits = sum(1 for c in commits if c.get("row_type", "author") == "author")
     all_dates = [datetime.fromisoformat(c["date"]) for c in commits if c["date"]]
     project_start = min(all_dates) if all_dates else None
     project_end = max(all_dates) if all_dates else None

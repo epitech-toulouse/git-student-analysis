@@ -96,20 +96,6 @@ john@epitech.eu | J. Doe     → 2 commits
 
 → Ils seront **fusionnés** en un seul auteur "John Doe" (nom le plus fréquent) avec une alerte dans le rapport.
 
-### Cas d'Usage 4 : Pair Programming avec Co-authored-by (Auto-détecté)
-
-En pair programming, si Bob pousse depuis son laptop, Git enregistrerait 100% du travail à Bob et 0% à Alice. Pour éviter cette injustice, encouragez vos étudiants à utiliser le trailer standard `Co-authored-by:` :
-
-```bash
-git commit -m "feat: implement auth module
-
-Co-authored-by: Alice Martin <alice@epitech.eu>"
-```
-
-Le skill **détecte automatiquement** ces trailers et attribue les contributions aux deux auteurs. GitHub affiche également les deux auteurs sur l'interface web.
-
-**Recommandation pédagogique** : Demandez à vos étudiants d'utiliser systématiquement `Co-authored-by:` lors de leurs sessions de pair programming.
-
 ### Cas d'Usage 4 : Avec Mapping des Identités
 
 Si plusieurs emails correspondent à la même personne, créez un `mapping.csv` :
@@ -124,6 +110,20 @@ Puis demandez l'analyse avec mapping :
 ```
 Analyse les contributions avec le mapping mapping.csv
 ```
+
+### Cas d'Usage 5 : Pair Programming avec Co-authored-by (Auto-détecté)
+
+En pair programming, si Bob pousse depuis son laptop, Git enregistrerait 100% du travail à Bob et 0% à Alice. Pour éviter cette injustice, encouragez vos étudiants à utiliser le trailer standard `Co-authored-by:` :
+
+```bash
+git commit -m "feat: implement auth module
+
+Co-authored-by: Alice Martin <alice@epitech.eu>"
+```
+
+Le skill **détecte automatiquement** ces trailers et attribue les contributions aux deux auteurs. GitHub affiche également les deux auteurs sur l'interface web.
+
+**Recommandation pédagogique** : Demandez à vos étudiants d'utiliser systématiquement `Co-authored-by:` lors de leurs sessions de pair programming.
 
 ## 🎯 Ce que le Skill Produit
 
