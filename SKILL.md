@@ -139,7 +139,7 @@ Le script `run_analysis.sh` génère automatiquement le rapport à la racine du 
 **Important** : Le générateur actuel commence par le titre du rapport. L'avertissement ci-dessous doit être intégré directement au template et apparaître en tête du contenu du rapport, avant les sections d'analyse détaillées, afin de rester cohérent avec le format réellement produit.
 
 ```markdown
-# Analyse Git — <nom_repo> — <date>
+# 📊 Analyse Git — <nom_repo>
 
 ## ⚠️ Utilisation responsable de ce rapport
 Ce rapport mesure l'activité Git observable, pas la qualité du travail ni l'apprentissage.

@@ -115,6 +115,9 @@ def detect_suspicious_patterns(commits: list[dict], dates: list[datetime]) -> li
     """Détecte les patterns suspects et formule des questions à poser à l'étudiant."""
     questions = []
 
+    # Trier chronologiquement pour que les séries soient détectées dans l'ordre naturel
+    commits = sorted(commits, key=lambda c: c["date"])
+
     # 1. Messages identiques sur 3+ commits consécutifs
     messages = [c["message"].strip().lower() for c in commits]
     i = 0
