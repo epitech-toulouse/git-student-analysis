@@ -26,6 +26,10 @@ Si l'utilisateur n'a pas précisé, demander :
 - **Source** : URL GitHub ou chemin local ?
 - **Branche(s)** à analyser (défaut : `main` ou branche par défaut)
 - **Mapping identités** : y a-t-il une liste nom/email des étudiants ? (optionnel, améliore le regroupement)
+- **Convention de messages** (optionnel) : `message_convention: conventional | free | custom`
+  - `conventional` (défaut) : valorise Conventional Commits en EN et FR, accepte les conventions alternatives cohérentes
+  - `free` : valorise tout message clair et informatif, quelle que soit la convention
+  - `custom` : l'enseignant précise sa convention (ex: `[TYPE] description`, `#ref - message`)
 
 ---
 

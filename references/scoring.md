@@ -2,20 +2,41 @@
 
 ## Qualité des messages de commit (score 0–3)
 
+> **⚠️ Principe directeur** : Le scoring évalue la **clarté et l'utilité** du message, pas sa longueur ni sa langue. Un message en français, en espagnol ou en anglais peut obtenir le score maximum si il est clair et informatif.
+
 | Score | Label | Critères |
 |---|---|---|
-| **3** ⭐⭐⭐ | Excellent | Message explicite : verbe d'action + contexte + pourquoi. Ex : `fix(auth): correct token expiry check to avoid logout loop` |
-| **2** ⭐⭐ | Correct | Message court mais compréhensible. Ex : `add login page`, `fix null pointer in UserService` |
-| **1** ⭐ | Insuffisant | Message vague, trop court, ou non informatif. Ex : `fix`, `wip`, `update`, `test`, `ok`, `asdfgh` |
+| **3** ⭐⭐⭐ | Excellent | Message explicite : verbe d'action + contexte + pourquoi. Ex : `fix(auth): correct token expiry` / `Corrige la fuite mémoire dans le parser` / `[FEATURE] #42 - Ajout du login OAuth` |
+| **2** ⭐⭐ | Correct | Message court mais compréhensible — on sait ce qui a changé. Ex : `add login page`, `fix null pointer`, `Ajoute la page de connexion` |
+| **1** ⭐ | Insuffisant | Message vague ou trop court pour comprendre le changement. Ex : `fix`, `wip`, `update`, `ok`, `asdfgh` |
 | **0** ⚠️ | Inexistant/Inutile | Message vide, un seul caractère, ou copié-collé de la commande. Ex : `""`, `.`, `commit` |
 
-**Heuristiques de détection automatique :**
-- Score 0 : len(message) <= 3 ou message in ['commit', 'update', 'fix', 'wip', 'test', 'ok', 'done', '.', '..']
-- Score 1 : len(message) < 15 ou message sans verbe ni contexte
-- Score 2 : message entre 15–72 caractères avec un verbe reconnaissable
-- Score 3 : message respectant Conventional Commits (`type(scope): description`) OU > 40 chars avec contexte clair
+**Heuristiques de détection automatique (langue-agnostiques) :**
+- Score 0 : `len(message) <= 3` ou message dans la liste de mots vides (`commit`, `wip`, `test`, `ok`, `done`, `.`, `..`)
+- Score 1 : message < 10 caractères ET pas de verbe reconnaissable, OU message purement générique
+- Score 2 : message informatif en **toute langue** — contient un verbe d'action et un objet
+- Score 3 : message respectant une convention claire : Conventional Commits EN/FR (`type(scope): desc` ou `type: desc`), ou convention alternative cohérente (`[TYPE]`, `#ref -`, `TYPE:`) avec description informative
 
-**Score global étudiant :** moyenne des scores de ses commits, arrondie.
+**Conventions alternatives acceptables (score 3 si appliquées de façon cohérente) :**
+- `[FEATURE] Ajout du module d'authentification` → score 3
+- `#42 - Correction du bug de déconnexion` → score 3
+- `FEAT: implement OAuth login` → score 3
+- `fix: auth loop` (14 chars, Conventional Commits) → score 3 ✅ (la clarté prime sur la longueur)
+- `Corrige la fuite mémoire dans le parser HTTP` → score 3 ✅ (français, clair et informatif)
+
+**Score global étudiant :** moyenne des scores de ses commits, arrondie. Signaler si l'équipe utilise une convention différente de Conventional Commits mais l'applique de façon cohérente.
+
+### Paramètre de convention (`message_convention`)
+
+Le skill supporte trois modes de scoring des messages :
+
+| Mode | Valeur | Comportement |
+|---|---|---|
+| Conventional Commits | `conventional` (défaut) | Valorise `type(scope): description`, accepte EN et FR |
+| Libre mais clair | `free` | Valorise tout message informatif, quelle que soit la convention |
+| Convention personnalisée | `custom` | L'enseignant précise sa convention, le skill adapte le scoring |
+
+En mode `free`, un message comme `"Réunion d'équipe — on a décidé de réécrire l'auth"` obtient score 2 même sans convention formelle.
 
 ---
 
