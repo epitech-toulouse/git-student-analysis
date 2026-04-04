@@ -79,6 +79,10 @@ Diviser la durée totale du projet en 3 phases égales et analyser la contributi
 → Dynamique : montée en puissance / stable / décroissante / rush final
 ```
 
+---
+
+## Analyse de fréquence
+
 Calculer : `commits_par_semaine = total_commits / max(1, nb_semaines_projet)`
 
 | Pattern | Interprétation |
