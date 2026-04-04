@@ -59,7 +59,7 @@ function print_commit(    coauthor, parts, n, i, cname, cemail, label) {
 
 /^COMMIT_SEP/ {
     print_commit()
-    line = substr($0, 12)
+    line = substr($0, length("COMMIT_SEP") + 1)
     n = split(line, parts, "|")
     hash = parts[1]; name = parts[2]; email = parts[3]; date = parts[4]; parents = parts[5]
     msg = ""
