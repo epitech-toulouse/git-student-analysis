@@ -3,7 +3,8 @@
 # Output: TSV sur stdout : hash|author_name|author_email|date_iso|insertions|deletions|files_changed|message
 # Par défaut, les merge commits sont EXCLUS des métriques (évite la double comptabilisation).
 # Passer --include-merges pour les inclure (ils seront marqués avec le préfixe [merge]).
-# Co-authored-by trailers sont détectés et génèrent des lignes supplémentaires (type=coauthor)
+# Les trailers Co-authored-by sont détectés et génèrent des lignes TSV supplémentaires au même format,
+# sans colonne `type` dédiée : hash synthétique suffixé par `_coauthor_...` et message préfixé par `[co-author]`.
 
 REPO_PATH="${1:-.}"
 BRANCH="${2:-HEAD}"
