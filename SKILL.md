@@ -171,6 +171,6 @@ Recalculer les formules avec `scripts/recalc.py` si des formules Excel sont util
 |---|---|
 | Repo vide / 0 commits | Signaler et arrêter |
 | Un seul auteur | Rapport simplifié, pas de % |
-| Merge commits nombreux | Inclure + alerter (workflow non maîtrisé) |
+| Merge commits nombreux | Exclure des métriques LOA/count par défaut (évite double comptabilisation). Signaler : "Nombreux merge commits détectés — peut indiquer un workflow par branches (positif) ou des conflits fréquents (à vérifier)" |
 | Commits vides (`--allow-empty`) | Compter + noter en alerte |
 | Réseau bloqué (clone impossible) | Demander chemin local |
