@@ -102,7 +102,7 @@ Signaler dans le rapport :
 | **Fréquence** | commits / durée_projet_jours ; détecter les rushes |
 | **Qualité messages** | Score 0–3 (voir `references/scoring.md`) |
 | **Pertinence modifications** | Appréciation qualitative (voir `references/scoring.md`) |
-| **Ratio insertions/deletions** | insertions / max(1, deletions) — signale le refactoring |
+| **Ratio insertions/deletions** | si `deletions > 0` : `insertions / deletions` ; si `deletions == 0` : afficher `∞` ou `N/A` et interpréter comme “ajout net, aucune suppression” |
 
 ---
 
