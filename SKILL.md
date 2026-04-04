@@ -117,7 +117,9 @@ Le script `run_analysis.sh` génère automatiquement le rapport à la racine du 
 
 **Emplacement** : `<repo_root>/git-analysis-report-YYYY-MM-DD.md`
 
-```
+**Important** : Le générateur actuel commence par le titre du rapport. L'avertissement ci-dessous doit être intégré directement au template et apparaître en tête du contenu du rapport, avant les sections d'analyse détaillées, afin de rester cohérent avec le format réellement produit.
+
+```markdown
 # Analyse Git — <nom_repo> — <date>
 
 ## ⚠️ Utilisation responsable de ce rapport
