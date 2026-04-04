@@ -8,6 +8,10 @@ on:
       - '.github/**'
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   convert:
     runs-on: ubuntu-latest
@@ -44,5 +48,6 @@ jobs:
             echo "No changes to .skill file, skipping commit."
           else
             git commit -m "chore: update git-student-analysis.skill [skip ci]"
+            git pull --rebase
             git push
           fi
