@@ -123,7 +123,7 @@ Le script `run_analysis.sh` génère automatiquement le rapport à la racine du 
 ### 👤 <Prénom Nom> (<email_canonique>)
 - Commits : X (Y%)
 - Lignes : +Z / -W  |  Fichiers distincts : N
-- Ratio insertions/deletions : X.X → [🔧 refactoring probable si ratio < 0.5] [📝 ajout net si ratio > 3]
+- Ratio insertions/deletions : X.X → [🔧 refactoring probable si ratio < 0.3] [📝 ajout net si ratio > 5.0] (voir `references/scoring.md` pour la grille détaillée)
 - Fréquence : régulière / rush fin de projet / absente
 - Qualité des messages : ⭐⭐⭐ / ⭐⭐ / ⭐ / ⚠️ inexistants
 - Pertinence des modifications : <texte>
