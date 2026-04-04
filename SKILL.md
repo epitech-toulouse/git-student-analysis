@@ -111,18 +111,15 @@ Le script `run_analysis.sh` génère automatiquement le rapport à la racine du 
 
 **Emplacement** : `<repo_root>/git-analysis-report-YYYY-MM-DD.md`
 
-**Important** : Le rapport doit impérativement commencer par le bloc d'avertissement suivant, avant toutes les métriques :
+**Important** : Le rapport doit impérativement commencer par l'avertissement suivant, intégré directement au template, avant toutes les métriques :
 
 ```markdown
-## ⚠️ Utilisation responsable de ce rapport
+**⚠️ Utilisation responsable de ce rapport**
 Ce rapport mesure l'activité Git observable, pas la qualité du travail ni l'apprentissage.
 - Nombre de commits ≠ impact technique
 - Lignes ajoutées ≠ fonctionnalités implémentées
 - % de commits ≠ responsabilité du projet
 Ne pas utiliser seul pour calculer une note.
-```
-
-```
 # Analyse Git — <nom_repo> — <date>
 ## Résumé global
 - Total commits : X  |  Période : <début> → <fin>
