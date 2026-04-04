@@ -14,7 +14,7 @@ WEAK_MESSAGES = {"commit","update","fix","wip","test","ok","done",".","..","..."
 _ACTION_VERBS_RE = re.compile(
     r"\b(add|fix|remove|update|refactor|implement|create|delete|change|improve|rename|move|merge|revert|"
     r"ajoute[rz]?|corrige[rz]?|supprime[rz]?|modifie[rz]?|impl[eé]mente[rz]?|cr[eé][eé][rz]?|"
-    r"d[eé]place[rz]?|remplace[rz]?|r[eé]sout|r[eé]soudre|r[eé][eé]crit|initialise[rz]?|int[eè]gre[rz]?)\b",
+    r"d[eé]place[rz]?|remplace[rz]?|r[eé]sou[st]|r[eé]soudre|r[eé][eé]crit|initialise[rz]?|int[eè]gre[rz]?)\b",
     re.IGNORECASE,
 )
 
