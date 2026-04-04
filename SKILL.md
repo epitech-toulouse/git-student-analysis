@@ -109,10 +109,11 @@ Diviser la durée du projet en **3 phases égales** (tiers du temps total) et ca
 
 | Phase | Période | Commits étudiant | % de ses commits | % du total phase |
 |---|---|---|---|---|
-| Phase 1 (début) | <date_début> → <1/3> | N | X% | Y% |
-| Phase 2 (milieu) | <1/3> → <2/3> | N | X% | Y% |
-| Phase 3 (fin) | <2/3> → <date_fin> | N | X% | Y% |
+| Phase 1 (début) | `date_debut` → `t_plus_1_tiers` | N | X% | Y% |
+| Phase 2 (milieu) | `t_plus_1_tiers` → `t_plus_2_tiers` | N | X% | Y% |
+| Phase 3 (fin) | `t_plus_2_tiers` → `date_fin` | N | X% | Y% |
 
+Convention de bornes à préciser explicitement dans le rapport : phase 1 = `date_debut <= commit < t_plus_1_tiers`, phase 2 = `t_plus_1_tiers <= commit < t_plus_2_tiers`, phase 3 = `t_plus_2_tiers <= commit <= date_fin`. Ainsi, un commit horodaté exactement à `t_plus_1_tiers` appartient à la phase 2, et un commit horodaté exactement à `t_plus_2_tiers` appartient à la phase 3.
 Mentionner explicitement dans le rapport les progressions significatives :
 - `Alice : contribution faible en phase 1 (5%), forte en phase 3 (55%) — montée en puissance`
 - `Bob : contribution décroissante (40% → 15%) — vérifier la phase 3`
