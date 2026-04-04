@@ -83,6 +83,11 @@ def parse_tsv(path: str) -> list[dict]:
             })
     return commits
 
+def _normalize_message_excerpt(message: str, max_len: int = 50) -> str:
+    """Normalise un extrait de message pour l'inclure dans une question."""
+    return message[:max_len].strip().replace("\n", " ").replace("\r", "").replace('"', "'")
+
+
 def detect_suspicious_patterns(commits: list[dict], dates: list[datetime]) -> list[str]:
     """Détecte les patterns suspects et formule des questions à poser à l'étudiant."""
     questions = []
@@ -96,7 +101,7 @@ def detect_suspicious_patterns(commits: list[dict], dates: list[datetime]) -> li
             count = 3
             while i + count < len(messages) and messages[i + count] == msg:
                 count += 1
-            excerpt = commits[i]["message"][:50].strip().replace("\n", " ").replace("\r", "").replace('"', "'")
+            excerpt = _normalize_message_excerpt(commits[i]["message"])
             questions.append(
                 f"❓ {count} commits consécutifs avec un message identique (\"{excerpt}\") "
                 f"— ce message décrit-il vraiment {count} changements distincts ?"
@@ -120,7 +125,7 @@ def detect_suspicious_patterns(commits: list[dict], dates: list[datetime]) -> li
             run_length += 1
         else:
             if run_length >= micro_commit_run_threshold:
-                run_excerpt = commits[run_start]["message"][:50].strip().replace("\n", " ").replace("\r", "").replace('"', "'")
+                run_excerpt = _normalize_message_excerpt(commits[run_start]["message"])
                 questions.append(
                     f"❓ {run_length} micro-commits consécutifs détectés (< 5 lignes modifiées chacun) "
                     f"(à partir de \"{run_excerpt}\") "
@@ -130,7 +135,7 @@ def detect_suspicious_patterns(commits: list[dict], dates: list[datetime]) -> li
             run_length = 0
 
     if run_length >= micro_commit_run_threshold:
-        run_excerpt = commits[run_start]["message"][:50].strip().replace("\n", " ").replace("\r", "").replace('"', "'")
+        run_excerpt = _normalize_message_excerpt(commits[run_start]["message"])
         questions.append(
             f"❓ {run_length} micro-commits consécutifs détectés (< 5 lignes modifiées chacun) "
             f"(à partir de \"{run_excerpt}\") "
@@ -154,7 +159,7 @@ def detect_suspicious_patterns(commits: list[dict], dates: list[datetime]) -> li
             if burst_size >= min_burst_commits:
                 delta_minutes = (dates_sorted[burst_end] - dates_sorted[i]).total_seconds() / 60
                 if delta_minutes < 1:
-                    duration_text = "1 minute"
+                    duration_text = "< 1 minute"
                 elif delta_minutes < 10:
                     duration_text = f"{delta_minutes:.1f} minutes"
                 else:
