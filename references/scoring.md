@@ -66,7 +66,7 @@ Afficher aussi : date du 1er commit et date du dernier commit par étudiant.
 
 ### Principe
 
-Le ratio `insertions / deletions` est un indicateur de la nature du travail effectué lorsque `deletions > 0`. Il complète le LOA brut et évite de pénaliser le refactoring.
+Le ratio `insertions / deletions` est un indicateur de la nature du travail effectué lorsque `deletions > 0`. Il complète le volume brut de lignes ajoutées/supprimées et évite de pénaliser le refactoring.
 
 **Cas particulier important :** si `deletions == 0`, le ratio n'est pas calculable au sens habituel (on peut le noter non défini / ∞ si `insertions > 0`). Ce cas doit être interprété explicitement comme un commit d'ajout pur, et non être mélangé artificiellement avec les ratios numériques via `max(1, deletions)`.
 
