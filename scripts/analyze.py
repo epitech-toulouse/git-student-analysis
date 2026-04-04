@@ -111,33 +111,36 @@ def detect_suspicious_patterns(commits: list[dict], dates: list[datetime]) -> li
             i += 1
 
     # 2. Micro-commits : séries consécutives de commits avec < 5 lignes modifiées
-    micro_commit_run_threshold = 5
+    micro_commit_max_changed_lines = 4
+    micro_commit_min_run_length = 5
     run_start = None
     run_length = 0
 
     for idx, commit in enumerate(commits):
         changed_lines = commit["insertions"] + commit["deletions"]
-        is_micro_commit = 0 < changed_lines < 5
+        is_micro_commit = 0 < changed_lines <= micro_commit_max_changed_lines
 
         if is_micro_commit:
             if run_length == 0:
                 run_start = idx
             run_length += 1
         else:
-            if run_length >= micro_commit_run_threshold:
+            if run_length >= micro_commit_min_run_length:
                 run_excerpt = _normalize_message_excerpt(commits[run_start]["message"])
                 questions.append(
-                    f"❓ {run_length} micro-commits consécutifs détectés (< 5 lignes modifiées chacun) "
+                    f"❓ {run_length} micro-commits consécutifs détectés "
+                    f"(< {micro_commit_max_changed_lines + 1} lignes modifiées chacun) "
                     f"(à partir de \"{run_excerpt}\") "
                     f"— s'agit-il d'un découpage intentionnel du travail ou d'une séquence de corrections ?"
                 )
             run_start = None
             run_length = 0
 
-    if run_length >= micro_commit_run_threshold:
+    if run_length >= micro_commit_min_run_length:
         run_excerpt = _normalize_message_excerpt(commits[run_start]["message"])
         questions.append(
-            f"❓ {run_length} micro-commits consécutifs détectés (< 5 lignes modifiées chacun) "
+            f"❓ {run_length} micro-commits consécutifs détectés "
+            f"(< {micro_commit_max_changed_lines + 1} lignes modifiées chacun) "
             f"(à partir de \"{run_excerpt}\") "
             f"— s'agit-il d'un découpage intentionnel du travail ou d'une séquence de corrections ?"
         )
