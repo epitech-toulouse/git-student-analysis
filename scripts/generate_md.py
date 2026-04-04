@@ -129,7 +129,20 @@ def generate_markdown(data, repo_name, output_path):
     lines.append("")
 
     # Section alertes globales
-    all_flags = [(a.get("display_name", "Inconnu"), f) for a in authors for f in a.get("red_flags", [])]
+    def _format_alert(alert):
+        if isinstance(alert, str):
+            return alert
+        if isinstance(alert, dict):
+            return alert.get("message") or alert.get("title") or json.dumps(alert, ensure_ascii=False)
+        return str(alert)
+
+    all_flags = []
+    for a in authors:
+        raw_alerts = a.get("alerts")
+        if raw_alerts is None:
+            raw_alerts = a.get("red_flags", [])
+        for alert in raw_alerts:
+            all_flags.append((a.get("display_name", "Inconnu"), _format_alert(alert)))
     if all_flags:
         lines.append("## ⚠️ Points d'attention pédagogiques")
         lines.append("")
