@@ -1,12 +1,29 @@
 #!/usr/bin/env bash
 # Usage: bash extract_commits.sh <repo_path> [branch]
-# Output: TSV sur stdout : hash|author_name|author_email|date_iso|insertions|deletions|files_changed|message|row_type
-# row_type=author pour les commits normaux, row_type=coauthor pour les lignes de co-auteurs (pair programming)
+# Output: TSV sur stdout : hash|author_name|author_email|date_iso|insertions|deletions|files_changed|row_type|message
+#
+# Contrat de sortie : 1 ligne = 1 contribution (auteur ou co-auteur), pas 1 ligne = 1 commit.
+# Un commit avec co-auteurs produit plusieurs lignes partageant le même hash :
+#   - row_type=author   : ligne canonique du commit
+#   - row_type=coauthor : ligne supplémentaire pour chaque co-auteur (pair programming)
+# Pour compter les commits uniques, filtrer row_type=author ; ne pas utiliser wc -l sur tout le TSV.
+# Note: row_type est placé AVANT message pour que message (qui peut contenir '|') reste en dernière colonne.
+#
+# Prérequis : git >= 2.18 (pour %(trailers:...))
 
 REPO_PATH="${1:-.}"
 BRANCH="${2:-HEAD}"
 
 cd "$REPO_PATH" || { echo "ERROR: cannot cd to $REPO_PATH" >&2; exit 1; }
+
+# Vérifier la version de git (%(trailers:...) requiert git >= 2.18)
+_git_version=$(git --version | awk '{print $3}')
+_git_major=$(echo "$_git_version" | cut -d. -f1)
+_git_minor=$(echo "$_git_version" | cut -d. -f2)
+if [ "$_git_major" -lt 2 ] || { [ "$_git_major" -eq 2 ] && [ "$_git_minor" -lt 18 ]; }; then
+    echo "ERROR: git >= 2.18 requis pour %(trailers:...). Version actuelle : $_git_version" >&2
+    exit 1
+fi
 
 # Format : COMMIT_SEP<hash>|<name>|<email>|<date>|<sujet>\x1E<co-auteurs séparés par \x1C>
 # \x1E (RS) sépare le sujet des trailers ; \x1C (FS) sépare plusieurs co-auteurs
@@ -21,7 +38,7 @@ function trim(s) { gsub(/^[[:space:]]+|[[:space:]]+$/, "", s); return s }
 
 function print_commit(    i, n, parts, val, cname, cemail) {
     if (hash == "") return
-    print hash, name, email, date, ins, del, files, msg, "author"
+    print hash, name, email, date, ins, del, files, "author", msg
     if (coauthors == "") return
     n = split(coauthors, parts, "\034")
     for (i = 1; i <= n; i++) {
@@ -30,7 +47,7 @@ function print_commit(    i, n, parts, val, cname, cemail) {
             cname = trim(arr[1])
             cemail = trim(arr[2])
             if (cemail != "")
-                print hash, cname, cemail, date, ins, del, files, msg, "coauthor"
+                print hash, cname, cemail, date, ins, del, files, "coauthor", msg
         }
     }
 }

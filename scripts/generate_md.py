@@ -98,6 +98,8 @@ def generate_markdown(data, repo_name, output_path):
             lines.append(f"- **Activité** : du `{fd}` au `{ld}` ({a.get('frequency_label', 'N/A')})")
 
         lines.append(f"- **Commits** : {a.get('commit_count', 0)} ({a.get('commit_pct', 0):.1f}% du total)")
+        if a.get("coauthored_commits", 0) > 0:
+            lines.append(f"- **🤝 Co-auteur** : {a['coauthored_commits']} commit(s) en pair programming détectés")
         lines.append(f"- **Lignes** : +{a.get('insertions', 0)} / −{a.get('deletions', 0)}")
         lines.append(f"- **Fichiers distincts** : {a.get('files_distinct', 0)}")
         lines.append(f"- **Qualité des messages** : {a.get('avg_message_score', 0):.1f}/5 {score_emoji(a.get('avg_message_score', 0)*2)}")
@@ -127,7 +129,7 @@ def generate_markdown(data, repo_name, output_path):
     lines.append("")
 
     # Section alertes globales
-    all_flags = [(a["canonical_name"], f) for a in authors for f in a.get("red_flags", [])]
+    all_flags = [(a.get("display_name", "Inconnu"), f) for a in authors for f in a.get("red_flags", [])]
     if all_flags:
         lines.append("## ⚠️ Points d'attention pédagogiques")
         lines.append("")
@@ -135,13 +137,13 @@ def generate_markdown(data, repo_name, output_path):
             lines.append(f"- **{name}** : {flag}")
         lines.append("")
 
-    # Étudiants sans commits
-    no_commit = [a for a in authors if a["commit_count"] == 0]
+    # Étudiants sans contribution (ni auteur ni co-auteur)
+    no_commit = [a for a in authors if a.get("commit_count", 0) == 0 and a.get("coauthored_commits", 0) == 0]
     if no_commit:
         lines.append("## 🚨 Étudiants sans contribution")
         lines.append("")
         for a in no_commit:
-            lines.append(f"- {a['canonical_name']} ({', '.join(a['emails'])})")
+            lines.append(f"- {a.get('display_name', 'Inconnu')} (`{a.get('canonical_key', '')}`)")
         lines.append("")
 
     content = "\n".join(lines)

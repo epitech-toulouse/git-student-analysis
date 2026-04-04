@@ -92,8 +92,8 @@ Stratégie de déduplication :
 
 **Co-authorship (pair programming)** : Le script `extract_commits.sh` détecte automatiquement les trailers `Co-authored-by:` dans les messages de commit. Lorsqu'un co-auteur est détecté :
 - Les statistiques du commit (insertions, deletions) sont également attribuées au co-auteur
-- Le rapport doit mentionner explicitement : `🤝 Co-auteur sur N commits (pair programming détecté)`
-- Ne pas comptabiliser deux fois les commits dans le total global
+- Le rapport mentionne explicitement : `🤝 Co-auteur sur N commits (pair programming détecté)`
+- Les commits ne sont comptabilisés qu'une fois dans le total global (`row_type=author`) ; les lignes `row_type=coauthor` s'ajoutent sans gonfler `total_commits`
 
 Signaler dans le rapport :
 - Les fusions réalisées (noms alternatifs détectés)
