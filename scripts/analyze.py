@@ -91,9 +91,26 @@ def parse_tsv(path: str) -> list[dict]:
     commits = []
     with open(path) as f:
         for line in f:
-            parts = line.rstrip("\n").split("|", 7)
+            # New format (9+ columns): hash|name|email|date|ins|del|files|row_type|message
+            # Old format (8 columns):  hash|name|email|date|ins|del|files|message
+            # row_type is at position 7 (before message) so message (position 8+) can contain '|'
+            parts = line.rstrip("\n").split("|", 8)
             if len(parts) < 8:
                 continue
+
+            # Detect format: if col 7 is literally 'author' or 'coauthor' it's the new format;
+            # otherwise treat col 7 as the message (old format without row_type)
+            col7 = parts[7].strip()
+            if col7 in ("author", "coauthor"):
+                row_type = col7
+                message = parts[8] if len(parts) >= 9 else ""
+            else:
+                # Old format without row_type column: col 7 is the message.
+                # If the message contained '|', split() will have put parts of it in parts[7] and
+                # parts[8], so reconstruct by joining from col 7 onwards.
+                row_type = "author"
+                message = "|".join(parts[7:])
+
             commits.append({
                 "hash": parts[0],
                 "author_name": parts[1],
@@ -102,7 +119,8 @@ def parse_tsv(path: str) -> list[dict]:
                 "insertions": int(parts[4]) if parts[4].isdigit() else 0,
                 "deletions": int(parts[5]) if parts[5].isdigit() else 0,
                 "files_changed": int(parts[6]) if parts[6].isdigit() else 0,
-                "message": parts[7],
+                "row_type": row_type,
+                "message": message,
             })
     return commits
 
@@ -251,7 +269,7 @@ def analyze(tsv_path: str, mapping_path: str = None) -> dict:
         else:
             canonical_names[key] = select_canonical_name(clist)
 
-    total_commits = len(commits)
+    total_commits = sum(1 for c in commits if c.get("row_type", "author") == "author")
     all_dates = [datetime.fromisoformat(c["date"]) for c in commits if c["date"]]
     project_start = min(all_dates) if all_dates else None
     project_end = max(all_dates) if all_dates else None
@@ -259,6 +277,13 @@ def analyze(tsv_path: str, mapping_path: str = None) -> dict:
 
     students = []
     for key, clist in groups.items():
+        # Separate authored commits (primary author) from co-authored (pair programming)
+        authored = [c for c in clist if c.get("row_type", "author") == "author"]
+        coauthored = [c for c in clist if c.get("row_type") == "coauthor"]
+        n_authored = len(authored)
+        n_coauthored = len(coauthored)
+
+        # Dates and scores use all participations (authored + co-authored)
         dates = []
         for c in clist:
             try:
@@ -272,14 +297,20 @@ def analyze(tsv_path: str, mapping_path: str = None) -> dict:
         first_commit = min(dates).isoformat() if dates else None
         last_commit = max(dates).isoformat() if dates else None
 
-        bursts = detect_bursts(dates)
+        # Burst detection uses only authored rows to avoid artificial duplicates from co-authoring
+        authored_dates = []
+        for c in authored:
+            try:
+                authored_dates.append(datetime.fromisoformat(c["date"]))
+            except Exception:
+                pass
+        bursts = detect_bursts(authored_dates)
 
-        # Frequency pattern
-        n = len(clist)
-        if dates:
-            span_days = max(1, (max(dates) - min(dates)).days)
-            commits_in_last_quarter = sum(1 for d in dates if (project_end - d).days <= project_days // 4)
-            if commits_in_last_quarter / n > 0.7:
+        # Frequency pattern based on authored commits only
+        if authored_dates:
+            span_days = max(1, (max(authored_dates) - min(authored_dates)).days)
+            commits_in_last_quarter = sum(1 for d in authored_dates if (project_end - d).days <= project_days // 4)
+            if n_authored > 0 and commits_in_last_quarter / n_authored > 0.7:
                 freq_label = "rush en fin de projet"
             elif span_days <= 2:
                 freq_label = "concentrée sur 1–2 jours"
@@ -316,8 +347,10 @@ def analyze(tsv_path: str, mapping_path: str = None) -> dict:
             "canonical_key": key,
             "display_name": canonical_names[key],
             "alternate_names": sorted(name_variations) if len(name_variations) > 1 else [],
-            "commit_count": n,
-            "commit_pct": round(100 * n / total_commits, 1),
+            # commit_count / commit_pct are based on authored rows only to keep totals coherent
+            "commit_count": n_authored,
+            "commit_pct": round(100 * n_authored / total_commits, 1) if total_commits > 0 else 0,
+            "coauthored_commits": n_coauthored,
             "insertions": sum(c["insertions"] for c in clist),
             "deletions": sum(c["deletions"] for c in clist),
             "files_distinct": len(files_set),
@@ -333,6 +366,7 @@ def analyze(tsv_path: str, mapping_path: str = None) -> dict:
                     "date": c["date"],
                     "message": c["message"],
                     "score": score_message(c["message"]),
+                    "row_type": c.get("row_type", "author"),
                 }
                 for c in clist
             ],
