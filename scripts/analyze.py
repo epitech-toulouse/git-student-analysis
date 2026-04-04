@@ -26,7 +26,7 @@ _CONVENTIONAL_RE = re.compile(
 
 # Alternative convention patterns: [TYPE] desc, #ref - desc, ALL_CAPS: desc
 _ALT_CONVENTION_RE = re.compile(
-    r"^(\[[A-Z][A-Z0-9_-]+\]\s.{5,}|#\d+\s*-\s*.{5,}|[A-Z]{2}[A-Z0-9_]*:\s.{5,})"
+    r"^(\[[A-Z][A-Z0-9_-]+\]\s.{5,}|#[A-Za-z0-9_-]+\s*-\s*.{5,}|[A-Z]{2}[A-Z0-9_]*:\s.{5,})"
 )
 
 def normalize_name(name: str) -> str:
@@ -44,14 +44,15 @@ def score_message(msg: str) -> int:
     # Score 3: matches a clear convention (Conventional Commits or coherent alternative)
     if _CONVENTIONAL_RE.match(msg) or _ALT_CONVENTION_RE.match(msg):
         return 3
-    # Score 3: long and clearly informative (verb + context)
-    if len(msg) >= 40 and _ACTION_VERBS_RE.search(msg):
-        return 3
+    # Score 2/3: has a recognizable verb → at least informative
+    if _ACTION_VERBS_RE.search(msg):
+        # Score 3 if long enough to be clearly contextual
+        return 3 if len(msg) >= 40 else 2
     # Score 1: very short with no recognizable verb
     if len(msg) < 10:
         return 1
-    # Score 2: informative in any language — has a verb, or long enough
-    if _ACTION_VERBS_RE.search(msg) or len(msg) >= 40:
+    # Score 2: long enough to be informative without a detected verb
+    if len(msg) >= 40:
         return 2
     return 1
 

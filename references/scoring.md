@@ -13,7 +13,7 @@
 
 **Heuristiques de détection automatique (langue-agnostiques) :**
 - Score 0 : `len(message) <= 3` ou message dans la liste de mots vides (`commit`, `wip`, `test`, `ok`, `done`, `.`, `..`)
-- Score 1 : message < 10 caractères ET pas de verbe reconnaissable, OU message purement générique
+- Score 1 : message < 10 caractères ET pas de verbe reconnaissable
 - Score 2 : message informatif en **toute langue** — contient un verbe d'action et un objet
 - Score 3 : message respectant une convention claire : Conventional Commits EN/FR (`type(scope): desc` ou `type: desc`), ou convention alternative cohérente (`[TYPE]`, `#ref -`, `TYPE:`) avec description informative
 
@@ -28,17 +28,17 @@
 
 ### Paramètre de convention (`message_convention`)
 
-Le skill supporte trois modes de scoring des messages :
+L'enseignant peut préciser un cadrage conversationnel pour l'évaluation des messages :
 
-| Mode | Valeur | Comportement |
+| Mode | Valeur | Usage |
 |---|---|---|
-| Conventional Commits | `conventional` (défaut) | Valorise `type(scope): description`, accepte EN et FR |
-| Libre mais clair | `free` | Valorise tout message informatif, quelle que soit la convention |
-| Convention personnalisée | `custom` | L'enseignant précise sa convention, le skill adapte le scoring |
+| Conventional Commits | `conventional` (défaut) | Indique que la promotion/l'équipe vise une convention de type `type(scope): description` |
+| Libre mais clair | `free` | Indique qu'aucune convention formelle n'est attendue, tant que le message reste informatif |
+| Convention personnalisée | `custom` | L'enseignant décrit la convention attendue ; cette information sert à contextualiser l'analyse et le rapport |
 
-> **Note** : ce paramètre est conversationnel — il permet à l'enseignant de contextualiser la demande et peut être mentionné dans le rapport. La détection automatique des conventions alternatives (`[TYPE]`, `#ref -`, `TYPE:`) et des verbes en français est implémentée dans le script `analyze.py`.
+> **Note** : ce paramètre est conversationnel — il permet de contextualiser la demande et peut être mentionné dans le rapport, mais n'active pas à lui seul un mode de scoring distinct dans les scripts. Les heuristiques automatiques restent celles décrites plus haut, notamment la détection de conventions alternatives (`[TYPE]`, `#ref -`, `TYPE:`) et de verbes en français dans `analyze.py`.
 
-En mode `free`, un message comme `"Réunion d'équipe — on a décidé de réécrire l'auth"` obtient score 2 même sans convention formelle.
+Par exemple, avec le cadrage `free`, un message comme `"Réunion d'équipe — on a décidé de réécrire l'auth"` peut être considéré comme informatif même sans convention formelle.
 
 ---
 
