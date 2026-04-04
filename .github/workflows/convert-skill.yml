@@ -48,6 +48,6 @@ jobs:
             echo "No changes to .skill file, skipping commit."
           else
             git commit -m "chore: update git-student-analysis.skill [skip ci]"
-            git pull --rebase
+            git pull --rebase --autostash
             git push
           fi
