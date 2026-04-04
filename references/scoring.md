@@ -47,7 +47,37 @@ Ratio insertions/deletions inhabituel sur <N> commits. À vérifier.
 
 ---
 
-## Analyse de fréquence
+## Analyse temporelle — progression par phase
+
+### Principe
+
+Diviser la durée totale du projet en 3 phases égales et analyser la contribution de chaque étudiant par phase. Cette analyse révèle la **dynamique** de contribution, invisible dans les totaux.
+
+### Interprétation des patterns temporels
+
+| Pattern | Interprétation pédagogique |
+|---|---|
+| Contribution croissante (5% → 30% → 55%) | ✅ Montée en compétence, implication progressive |
+| Contribution stable (30% → 35% → 35%) | ✅ Travail régulier et équilibré |
+| Contribution décroissante (50% → 30% → 10%) | ⚠️ Désengagement progressif — à explorer |
+| Contribution uniquement phase 3 (0% → 5% → 95%) | 🔴 Rush de dernière minute |
+| Contribution uniquement phase 1 (90% → 5% → 5%) | ⚠️ Implication initiale forte puis abandon |
+
+### Application dans la note
+
+- La **progression croissante** doit être valorisée : un étudiant qui monte en puissance démontre un apprentissage réel
+- Ne pas pénaliser automatiquement une faible phase 1 — l'étudiant peut avoir été en phase d'apprentissage
+- Un rush de phase 3 mérite une discussion, pas une sanction automatique
+
+### Format de présentation dans le rapport
+
+```
+📈 Analyse temporelle (projet du <date_début> au <date_fin>) :
+- Phase 1 (<date_début> → <1/3>) : X commits (Y% du total étudiant)
+- Phase 2 (<1/3> → <2/3>) : X commits (Y% du total étudiant)  
+- Phase 3 (<2/3> → <date_fin>) : X commits (Y% du total étudiant)
+→ Dynamique : montée en puissance / stable / décroissante / rush final
+```
 
 Calculer : `commits_par_semaine = total_commits / max(1, nb_semaines_projet)`
 

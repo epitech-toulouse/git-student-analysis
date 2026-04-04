@@ -103,6 +103,24 @@ Signaler dans le rapport :
 | **Qualité messages** | Score 0–3 (voir `references/scoring.md`) |
 | **Pertinence modifications** | Appréciation qualitative (voir `references/scoring.md`) |
 
+### Analyse temporelle par phase
+
+Diviser la durée du projet en **3 phases égales** (tiers du temps total) et calculer la contribution de chaque étudiant par phase :
+
+| Phase | Période | Commits étudiant | % de ses commits | % du total phase |
+|---|---|---|---|---|
+| Phase 1 (début) | <date_début> → <1/3> | N | X% | Y% |
+| Phase 2 (milieu) | <1/3> → <2/3> | N | X% | Y% |
+| Phase 3 (fin) | <2/3> → <date_fin> | N | X% | Y% |
+
+Mentionner explicitement dans le rapport les progressions significatives :
+- `Alice : contribution faible en phase 1 (5%), forte en phase 3 (55%) — montée en puissance`
+- `Bob : contribution décroissante (40% → 15%) — vérifier la phase 3`
+
+**Cas où l'analyse temporelle est particulièrement importante :**
+- Étudiant avec peu de commits en global mais progression croissante → peut sous-représenter l'implication réelle
+- Étudiant avec beaucoup de commits mais uniquement en phase 3 → rush de dernière minute possible
+
 ---
 
 ## Étape 5 — Générer le rapport Markdown
