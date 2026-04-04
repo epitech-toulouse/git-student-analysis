@@ -1,0 +1,52 @@
+name: Convert to Claude Skill
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '*.skill'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Convert Copilot skill to Claude .skill archive
+        id: convert
+        uses: Nico-TekToulouse/skill-converter@v1
+        with:
+          skill_dirs: .
+          output_dir: .
+
+      - name: Upload .skill file as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: git-student-analysis
+          path: "*.skill"
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Commit .skill file back to repository
+        if: github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ./*.skill
+          if git diff --cached --quiet; then
+            echo "No changes to .skill file, skipping commit."
+          else
+            git commit -m "chore: update git-student-analysis.skill [skip ci]"
+            git pull --rebase --autostash
+            git push
+          fi
