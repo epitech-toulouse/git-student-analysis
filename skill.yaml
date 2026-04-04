@@ -1,0 +1,52 @@
+name: git-student-analysis
+description: >
+  Analyse l'activité Git des étudiants sur un repository GitHub pour produire un rapport pédagogique 
+  détaillé. Fonctionne avec une URL GitHub publique ou un répertoire déjà cloné en local. 
+  Produit systématiquement un rapport Markdown lisible + un fichier Excel (.xlsx) exportable 
+  avec métriques par étudiant (commits, lignes, qualité des messages, fréquence).
+
+version: 1.0.0
+author: Nicolas Moreau
+
+# Triggers - mots-clés qui activent automatiquement ce skill
+triggers:
+  - analyser un repo
+  - voir les commits des étudiants
+  - évaluer les contributions
+  - rapport de commits
+  - activité GitHub d'un groupe
+  - qui a le plus contribué
+  - qualité des messages de commit
+  - fréquence des commits par étudiant
+  - analyse git étudiants
+  - contributions git
+
+# Dépendances requises
+dependencies:
+  - git
+  - bash
+  - python3
+
+# Capacités
+capabilities:
+  - Git repository analysis
+  - Student contribution metrics
+  - Commit quality scoring
+  - Excel report generation
+  - Multi-author deduplication
+
+# Sorties produites
+outputs:
+  - type: markdown
+    description: Rapport synthétique lisible dans le chat
+  - type: excel
+    description: Fichier .xlsx avec onglets résumé et détail des commits
+
+# Métadonnées
+tags:
+  - education
+  - git
+  - analysis
+  - student-evaluation
+  - pedagogy
+  - reporting
