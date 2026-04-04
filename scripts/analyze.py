@@ -91,14 +91,26 @@ def parse_tsv(path: str) -> list[dict]:
     commits = []
     with open(path) as f:
         for line in f:
-            # Format: hash|name|email|date|ins|del|files|row_type|message
-            # row_type is at position 7 (before message) so message (position 8) can contain '|'
+            # New format (9+ columns): hash|name|email|date|ins|del|files|row_type|message
+            # Old format (8 columns):  hash|name|email|date|ins|del|files|message
+            # row_type is at position 7 (before message) so message (position 8+) can contain '|'
             parts = line.rstrip("\n").split("|", 8)
             if len(parts) < 8:
                 continue
-            row_type = parts[7].strip()
-            if row_type not in ("author", "coauthor"):
+
+            # Detect format: if col 7 is literally 'author' or 'coauthor' it's the new format;
+            # otherwise treat col 7 as the message (old format without row_type)
+            col7 = parts[7].strip()
+            if col7 in ("author", "coauthor"):
+                row_type = col7
+                message = parts[8] if len(parts) >= 9 else ""
+            else:
+                # Old format without row_type column: col 7 is the message.
+                # If the message contained '|', split() will have put parts of it in parts[7] and
+                # parts[8], so reconstruct by joining from col 7 onwards.
                 row_type = "author"
+                message = "|".join(parts[7:])
+
             commits.append({
                 "hash": parts[0],
                 "author_name": parts[1],
@@ -108,7 +120,7 @@ def parse_tsv(path: str) -> list[dict]:
                 "deletions": int(parts[5]) if parts[5].isdigit() else 0,
                 "files_changed": int(parts[6]) if parts[6].isdigit() else 0,
                 "row_type": row_type,
-                "message": parts[8] if len(parts) >= 9 else "",
+                "message": message,
             })
     return commits
 
