@@ -272,11 +272,33 @@ git-student-analysis-copilot/
     └── llm-diff-analysis.md # Guide d'analyse LLM
 ```
 
+## ⚠️ Utilisation responsable
+
+> **Ces métriques mesurent l'activité Git observable, pas la qualité du travail ni l'apprentissage.**
+
+Cette section constitue une **recommandation d'interprétation des résultats** et doit être prise en compte lors de l'exploitation pédagogique des métriques.
+Avant d'utiliser ce skill pour évaluer des étudiants, gardez à l'esprit :
+
+| Métrique Git | ≠ | Réalité |
+|---|---|---|
+| Nombre de commits | ≠ | Impact technique |
+| Lignes ajoutées | ≠ | Fonctionnalités implémentées |
+| % de commits | ≠ | Responsabilité du projet |
+| Messages de commit | ≠ | Qualité du code |
+
+**Ne jamais utiliser ces métriques seules pour calculer une note.** Elles constituent un point de départ pour une discussion, pas une vérité objective.
+
+Cas courants qui faussent les métriques :
+- Le pair programming : une seule personne pousse le code écrit à deux
+- Le refactoring : supprimer 1000 lignes pour en écrire 300 meilleures = travail de qualité
+- Les générateurs de code : beaucoup de lignes ajoutées ≠ maîtrise
+- La division du travail : un étudiant conçoit l'architecture (peu de commits), un autre l'implémente
+
 ## 🎓 Cas d'Usage Pédagogiques
 
 ### Évaluation de Projet de Groupe
 
-"Qui a réellement travaillé sur ce projet ?" - Obtenez des données objectives.
+Obtenez une vue d'ensemble de l'activité Git de chaque étudiant pour identifier les contributions et engager des discussions sur la répartition du travail.
 
 ### Détection des Contributions Tardives
 
@@ -288,7 +310,7 @@ Montrez aux étudiants l'importance de messages de commit clairs et descriptifs.
 
 ### Équité dans les Notes
 
-Basez vos évaluations sur des métriques factuelles plutôt que des impressions.
+Complétez vos évaluations avec des métriques d'activité Git, en les croisant avec d'autres observations (revues de code, démos, entretiens individuels).
 
 ## 🤝 Contribution
 
