@@ -3,7 +3,7 @@
 Analyse les commits extraits par extract_commits.sh.
 Usage: python analyze.py commits_raw.tsv [mapping.csv] > report.json
 """
-import sys, json, unicodedata, re
+import sys, json, unicodedata, re, math
 from collections import defaultdict
 from datetime import datetime
 
@@ -106,6 +106,108 @@ def parse_tsv(path: str) -> list[dict]:
             })
     return commits
 
+def _normalize_message_excerpt(message: str, max_len: int = 50) -> str:
+    """Normalise un extrait de message pour l'inclure dans une question."""
+    return message[:max_len].strip().replace("\n", " ").replace("\r", "").replace('"', "'")
+
+
+def detect_suspicious_patterns(commits: list[dict], dates: list[datetime]) -> list[str]:
+    """Détecte les patterns suspects et formule des questions à poser à l'étudiant."""
+    questions = []
+
+    # Trier chronologiquement pour que les séries soient détectées dans l'ordre naturel
+    commits = sorted(commits, key=lambda c: c["date"])
+
+    # 1. Messages identiques sur 3+ commits consécutifs
+    messages = [c["message"].strip().lower() for c in commits]
+    i = 0
+    while i < len(messages) - 2:
+        msg = messages[i]
+        if msg and messages[i+1] == msg and messages[i+2] == msg:
+            count = 3
+            while i + count < len(messages) and messages[i + count] == msg:
+                count += 1
+            excerpt = _normalize_message_excerpt(commits[i]["message"])
+            questions.append(
+                f"❓ {count} commits consécutifs avec un message identique (\"{excerpt}\") "
+                f"— ce message décrit-il vraiment {count} changements distincts ?"
+            )
+            i += count
+        else:
+            i += 1
+
+    # 2. Micro-commits : séries consécutives de commits avec < 5 lignes modifiées
+    micro_commit_max_changed_lines = 4
+    micro_commit_min_run_length = 5
+    run_start = None
+    run_length = 0
+
+    for idx, commit in enumerate(commits):
+        changed_lines = commit["insertions"] + commit["deletions"]
+        is_micro_commit = 0 < changed_lines <= micro_commit_max_changed_lines
+
+        if is_micro_commit:
+            if run_length == 0:
+                run_start = idx
+            run_length += 1
+        else:
+            if run_length >= micro_commit_min_run_length:
+                run_excerpt = _normalize_message_excerpt(commits[run_start]["message"])
+                questions.append(
+                    f"❓ {run_length} micro-commits consécutifs détectés "
+                    f"(< {micro_commit_max_changed_lines + 1} lignes modifiées chacun) "
+                    f"(à partir de \"{run_excerpt}\") "
+                    f"— s'agit-il d'un découpage intentionnel du travail ou d'une séquence de corrections ?"
+                )
+            run_start = None
+            run_length = 0
+
+    if run_length >= micro_commit_min_run_length:
+        run_excerpt = _normalize_message_excerpt(commits[run_start]["message"])
+        questions.append(
+            f"❓ {run_length} micro-commits consécutifs détectés "
+            f"(< {micro_commit_max_changed_lines + 1} lignes modifiées chacun) "
+            f"(à partir de \"{run_excerpt}\") "
+            f"— s'agit-il d'un découpage intentionnel du travail ou d'une séquence de corrections ?"
+        )
+
+    # 3. Burst > 10 commits en < 30 minutes — sliding window O(n)
+    burst_window_minutes = 30
+    min_burst_commits = 11  # strictement > 10 commits
+    if len(dates) >= min_burst_commits:
+        dates_sorted = sorted(dates)
+        left = 0
+        max_burst_size = 0
+        max_burst_start = 0
+        max_burst_end = 0
+
+        for right in range(len(dates_sorted)):
+            while (dates_sorted[right] - dates_sorted[left]).total_seconds() / 60 >= burst_window_minutes:
+                left += 1
+            window_size = right - left + 1
+            if window_size > max_burst_size:
+                max_burst_size = window_size
+                max_burst_start = left
+                max_burst_end = right
+
+        if max_burst_size >= min_burst_commits:
+            delta_minutes = (dates_sorted[max_burst_end] - dates_sorted[max_burst_start]).total_seconds() / 60
+            if delta_minutes < 1:
+                duration_phrase = "en moins d'une minute"
+            elif delta_minutes < 10:
+                duration_phrase = f"en {delta_minutes:.1f} minutes"
+            else:
+                duration_phrase = f"en {math.ceil(delta_minutes)} minutes"
+
+            questions.append(
+                f"❓ {max_burst_size} commits {duration_phrase} "
+                f"(autour du {dates_sorted[max_burst_start].strftime('%Y-%m-%d %H:%M')}) "
+                f"— ce backlog de commits correspond-il à du travail effectué progressivement ?"
+            )
+
+    return questions
+
+
 def detect_bursts(dates: list[datetime], threshold_hours: int = 1, min_commits: int = 5) -> list[str]:
     alerts = []
     dates_sorted = sorted(dates)
@@ -199,6 +301,11 @@ def analyze(tsv_path: str, mapping_path: str = None) -> dict:
             alerts.append(f"Activité concentrée ({freq_label})")
         if bursts:
             alerts.extend(bursts)
+
+        # Suspicious patterns (questions à poser, pas des accusations)
+        suspicious_questions = detect_suspicious_patterns(clist, dates)
+        if suspicious_questions:
+            alerts.extend(suspicious_questions)
         
         # Check for name variations
         name_variations = list(all_names_by_key[key])
@@ -219,6 +326,7 @@ def analyze(tsv_path: str, mapping_path: str = None) -> dict:
             "frequency_label": freq_label,
             "avg_message_score": avg_score,
             "alerts": alerts,
+            "suspicious_patterns": suspicious_questions,
             "commits": [
                 {
                     "hash": c["hash"][:8],
