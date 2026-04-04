@@ -113,6 +113,14 @@ Le script `run_analysis.sh` génère automatiquement le rapport à la racine du 
 
 ```
 # Analyse Git — <nom_repo> — <date>
+
+## ⚠️ Utilisation responsable de ce rapport
+Ce rapport mesure l'activité Git observable, pas la qualité du travail ni l'apprentissage.
+- Nombre de commits ≠ impact technique
+- Lignes ajoutées ≠ fonctionnalités implémentées
+- % de commits ≠ responsabilité du projet
+Ne pas utiliser seul pour calculer une note.
+
 ## Résumé global
 - Total commits : X  |  Période : <début> → <fin>
 - Auteurs bruts : N  →  après déduplication : M
@@ -126,9 +134,15 @@ Le script `run_analysis.sh` génère automatiquement le rapport à la racine du 
 - Qualité des messages : ⭐⭐⭐ / ⭐⭐ / ⭐ / ⚠️ inexistants
 - Pertinence des modifications : <texte>
 - ⚠️ Alertes : ex. "10 commits en 2h avant deadline", "messages vides"
+- ❓ Questions à explorer : ex. "5 commits consécutifs avec message identique — s'agit-il de 5 changements distincts ?"
 
 [Identités fusionnées : ancien_email → email_canonique]
 ```
+
+**Patterns suspects à signaler (comme questions, jamais comme accusations) :**
+- Messages identiques sur 3+ commits consécutifs → `❓ X commits avec le même message "..." — ce message décrit-il X changements distincts ?`
+- Micro-commits (< 5 lignes modifiées en série) → `❓ N micro-commits détectés — s'agit-il d'un découpage intentionnel ?`
+- Burst > 10 commits en < 30 minutes → `❓ N commits en M minutes — ce backlog correspond-il à du travail progressif ?`
 
 ---
 

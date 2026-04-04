@@ -83,6 +83,52 @@ def parse_tsv(path: str) -> list[dict]:
             })
     return commits
 
+def detect_suspicious_patterns(commits: list[dict], dates: list[datetime]) -> list[str]:
+    """Détecte les patterns suspects et formule des questions à poser à l'étudiant."""
+    questions = []
+
+    # 1. Messages identiques sur 3+ commits consécutifs
+    messages = [c["message"].strip().lower() for c in commits]
+    i = 0
+    while i < len(messages) - 2:
+        msg = messages[i]
+        if msg and messages[i+1] == msg and messages[i+2] == msg:
+            count = 3
+            while i + count < len(messages) and messages[i + count] == msg:
+                count += 1
+            questions.append(
+                f"❓ {count} commits consécutifs avec un message identique (\"{commits[i]['message'][:50]}\") "
+                f"— ce message décrit-il vraiment {count} changements distincts ?"
+            )
+            i += count
+        else:
+            i += 1
+
+    # 2. Micro-commits : séries de commits avec < 5 lignes modifiées
+    micro_commits = [c for c in commits if (c["insertions"] + c["deletions"]) < 5 and (c["insertions"] + c["deletions"]) > 0]
+    if len(micro_commits) >= 5:
+        questions.append(
+            f"❓ {len(micro_commits)} micro-commits détectés (< 5 lignes modifiées chacun) "
+            f"— s'agit-il d'un découpage intentionnel du travail ou d'une séquence de corrections ?"
+        )
+
+    # 3. Burst > 10 commits en < 30 minutes
+    if len(dates) >= 10:
+        dates_sorted = sorted(dates)
+        for i in range(len(dates_sorted) - 9):
+            window = dates_sorted[i:i + 10]
+            delta_minutes = (window[-1] - window[0]).total_seconds() / 60
+            if delta_minutes < 30:
+                questions.append(
+                    f"❓ {len(window)}+ commits en moins de {delta_minutes:.0f} minutes "
+                    f"(autour du {window[0].strftime('%Y-%m-%d %H:%M')}) "
+                    f"— ce backlog de commits correspond-il à du travail effectué progressivement ?"
+                )
+                break
+
+    return questions
+
+
 def detect_bursts(dates: list[datetime], threshold_hours: int = 1, min_commits: int = 5) -> list[str]:
     alerts = []
     dates_sorted = sorted(dates)
@@ -176,6 +222,11 @@ def analyze(tsv_path: str, mapping_path: str = None) -> dict:
             alerts.append(f"Activité concentrée ({freq_label})")
         if bursts:
             alerts.extend(bursts)
+
+        # Suspicious patterns (questions à poser, pas des accusations)
+        suspicious_questions = detect_suspicious_patterns(clist, dates)
+        if suspicious_questions:
+            alerts.extend(suspicious_questions)
         
         # Check for name variations
         name_variations = list(all_names_by_key[key])
@@ -196,6 +247,7 @@ def analyze(tsv_path: str, mapping_path: str = None) -> dict:
             "frequency_label": freq_label,
             "avg_message_score": avg_score,
             "alerts": alerts,
+            "suspicious_patterns": suspicious_questions,
             "commits": [
                 {
                     "hash": c["hash"][:8],
