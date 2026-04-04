@@ -185,14 +185,14 @@ def detect_suspicious_patterns(commits: list[dict], dates: list[datetime]) -> li
             if burst_size >= min_burst_commits:
                 delta_minutes = (dates_sorted[burst_end] - dates_sorted[i]).total_seconds() / 60
                 if delta_minutes < 1:
-                    duration_text = "< 1 minute"
+                    duration_phrase = "en moins d'une minute"
                 elif delta_minutes < 10:
-                    duration_text = f"{delta_minutes:.1f} minutes"
+                    duration_phrase = f"en {delta_minutes:.1f} minutes"
                 else:
-                    duration_text = f"{delta_minutes:.0f} minutes"
+                    duration_phrase = f"en {delta_minutes:.0f} minutes"
 
                 questions.append(
-                    f"❓ {burst_size} commits en moins de {duration_text} "
+                    f"❓ {burst_size} commits {duration_phrase} "
                     f"(autour du {dates_sorted[i].strftime('%Y-%m-%d %H:%M')}) "
                     f"— ce backlog de commits correspond-il à du travail effectué progressivement ?"
                 )
