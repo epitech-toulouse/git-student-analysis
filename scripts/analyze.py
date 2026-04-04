@@ -3,7 +3,7 @@
 Analyse les commits extraits par extract_commits.sh.
 Usage: python analyze.py commits_raw.tsv [mapping.csv] > report.json
 """
-import sys, json, unicodedata, re
+import sys, json, unicodedata, re, math
 from collections import defaultdict
 from datetime import datetime
 
@@ -168,35 +168,39 @@ def detect_suspicious_patterns(commits: list[dict], dates: list[datetime]) -> li
             f"— s'agit-il d'un découpage intentionnel du travail ou d'une séquence de corrections ?"
         )
 
-    # 3. Burst > 10 commits en < 30 minutes
+    # 3. Burst > 10 commits en < 30 minutes — sliding window O(n)
     burst_window_minutes = 30
     min_burst_commits = 11  # strictement > 10 commits
     if len(dates) >= min_burst_commits:
         dates_sorted = sorted(dates)
-        for i in range(len(dates_sorted) - min_burst_commits + 1):
-            burst_end = i
-            while (
-                burst_end + 1 < len(dates_sorted)
-                and (dates_sorted[burst_end + 1] - dates_sorted[i]).total_seconds() / 60 < burst_window_minutes
-            ):
-                burst_end += 1
+        left = 0
+        max_burst_size = 0
+        max_burst_start = 0
+        max_burst_end = 0
 
-            burst_size = burst_end - i + 1
-            if burst_size >= min_burst_commits:
-                delta_minutes = (dates_sorted[burst_end] - dates_sorted[i]).total_seconds() / 60
-                if delta_minutes < 1:
-                    duration_phrase = "en moins d'une minute"
-                elif delta_minutes < 10:
-                    duration_phrase = f"en {delta_minutes:.1f} minutes"
-                else:
-                    duration_phrase = f"en {delta_minutes:.0f} minutes"
+        for right in range(len(dates_sorted)):
+            while (dates_sorted[right] - dates_sorted[left]).total_seconds() / 60 >= burst_window_minutes:
+                left += 1
+            window_size = right - left + 1
+            if window_size > max_burst_size:
+                max_burst_size = window_size
+                max_burst_start = left
+                max_burst_end = right
 
-                questions.append(
-                    f"❓ {burst_size} commits {duration_phrase} "
-                    f"(autour du {dates_sorted[i].strftime('%Y-%m-%d %H:%M')}) "
-                    f"— ce backlog de commits correspond-il à du travail effectué progressivement ?"
-                )
-                break
+        if max_burst_size >= min_burst_commits:
+            delta_minutes = (dates_sorted[max_burst_end] - dates_sorted[max_burst_start]).total_seconds() / 60
+            if delta_minutes < 1:
+                duration_phrase = "en moins d'une minute"
+            elif delta_minutes < 10:
+                duration_phrase = f"en {delta_minutes:.1f} minutes"
+            else:
+                duration_phrase = f"en {math.ceil(delta_minutes)} minutes"
+
+            questions.append(
+                f"❓ {max_burst_size} commits {duration_phrase} "
+                f"(autour du {dates_sorted[max_burst_start].strftime('%Y-%m-%d %H:%M')}) "
+                f"— ce backlog de commits correspond-il à du travail effectué progressivement ?"
+            )
 
     return questions
 
