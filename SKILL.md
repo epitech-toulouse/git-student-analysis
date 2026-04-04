@@ -26,6 +26,11 @@ Si l'utilisateur n'a pas précisé, demander :
 - **Source** : URL GitHub ou chemin local ?
 - **Branche(s)** à analyser (défaut : `main` ou branche par défaut)
 - **Mapping identités** : y a-t-il une liste nom/email des étudiants ? (optionnel, améliore le regroupement)
+- **Convention de messages** (optionnel, informatif / conversationnel) : `message_convention: conventional | free | custom`
+  - **Important** : ce paramètre n'est pas appliqué automatiquement comme filtre strict ; il sert à cadrer la demande et peut être mentionné dans le rapport. La détection automatique des conventions alternatives et des verbes français est intégrée au scoring.
+  - `conventional` (défaut) : valorise Conventional Commits en EN et FR, accepte les conventions alternatives cohérentes
+  - `free` : valorise tout message clair et informatif, quelle que soit la convention
+  - `custom` : l'enseignant précise sa convention attendue (ex: `[TYPE] description`, `#ref - message`) pour contexte
 
 ---
 
@@ -102,6 +107,7 @@ Signaler dans le rapport :
 | **Fréquence** | commits / durée_projet_jours ; détecter les rushes |
 | **Qualité messages** | Score 0–3 (voir `references/scoring.md`) |
 | **Pertinence modifications** | Appréciation qualitative (voir `references/scoring.md`) |
+| **Ratio insertions/deletions** | si `deletions > 0` : `insertions / deletions` ; si `deletions == 0` : afficher `∞` ou `N/A` et interpréter comme “ajout net, aucune suppression” |
 
 ### Analyse temporelle par phase
 
@@ -141,6 +147,7 @@ Le script `run_analysis.sh` génère automatiquement le rapport à la racine du 
 ### 👤 <Prénom Nom> (<email_canonique>)
 - Commits : X (Y%)
 - Lignes : +Z / -W  |  Fichiers distincts : N
+- Ratio insertions/deletions : X.X → [🔧 refactoring probable si ratio < 0.3] [📝 ajout net si ratio > 5.0] (voir `references/scoring.md` pour la grille détaillée)
 - Fréquence : régulière / rush fin de projet / absente
 - Qualité des messages : ⭐⭐⭐ / ⭐⭐ / ⭐ / ⚠️ inexistants
 - Pertinence des modifications : <texte>
