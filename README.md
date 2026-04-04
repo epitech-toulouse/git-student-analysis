@@ -262,7 +262,7 @@ git-student-analysis-copilot/
 
 > **Ces métriques mesurent l'activité Git observable, pas la qualité du travail ni l'apprentissage.**
 
-Cette section constitue une **recommandation d'interprétation des résultats**. **Elle n'est pas actuellement affichée automatiquement en tête du rapport Markdown généré** et doit donc être prise en compte lors de l'exploitation pédagogique des métriques.
+Cette section constitue une **recommandation d'interprétation des résultats** et doit être prise en compte lors de l'exploitation pédagogique des métriques.
 Avant d'utiliser ce skill pour évaluer des étudiants, gardez à l'esprit :
 
 | Métrique Git | ≠ | Réalité |
