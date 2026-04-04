@@ -82,13 +82,13 @@ Le ratio `insertions / deletions` est un indicateur de la nature du travail effe
 
 ### Application dans la note
 
-**Un ratio deletions élevé ne doit PAS être pénalisé.** Le refactoring est souvent signe d'une meilleure maîtrise du code :
+**Un ratio insertions/deletions faible (suppressions élevées) ne doit PAS être pénalisé.** Le refactoring est souvent signe d'une meilleure maîtrise du code :
 - Supprimer 1000 lignes pour en écrire 300 meilleures = travail de qualité
 - Nettoyer de la dette technique = contribution précieuse au projet
 
 **Formulation recommandée dans le rapport :**
 ```
-🔧 Ratio suppressions élevé (ratio: 0.3) sur N commits — peut indiquer du refactoring de qualité (à vérifier avec les messages de commit et les diffs).
+🔧 Ratio insertions/deletions faible (ratio: 0.3) sur N commits — peut indiquer du refactoring de qualité (à vérifier avec les messages de commit et les diffs).
 ```
 
-**Ne jamais écrire :** `"Bob a moins de lignes ajoutées que les autres"` sans mentionner le contexte de ses deletions.
+**Ne jamais écrire :** `"Bob a moins de lignes ajoutées que les autres"` sans mentionner le contexte de ses suppressions.
