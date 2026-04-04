@@ -66,16 +66,19 @@ Afficher aussi : date du 1er commit et date du dernier commit par étudiant.
 
 ### Principe
 
-Le ratio `insertions / max(1, deletions)` est un indicateur de la nature du travail effectué. Il complète le LOA brut et évite de pénaliser le refactoring.
+Le ratio `insertions / deletions` est un indicateur de la nature du travail effectué lorsque `deletions > 0`. Il complète le LOA brut et évite de pénaliser le refactoring.
+
+**Cas particulier important :** si `deletions == 0`, le ratio n'est pas calculable au sens habituel (on peut le noter non défini / ∞ si `insertions > 0`). Ce cas doit être interprété explicitement comme un commit d'ajout pur, et non être mélangé artificiellement avec les ratios numériques via `max(1, deletions)`.
 
 ### Interprétation du ratio
 
 | Ratio | Interprétation | Signal |
 |---|---|---|
-| > 5.0 | Beaucoup plus d'ajouts que de suppressions | 📝 Ajout de fonctionnalités ou copier-coller — vérifier |
-| 1.0 – 5.0 | Équilibre normal | ✅ Travail productif standard |
-| 0.3 – 1.0 | Plus de suppressions que d'ajouts | 🔧 Refactoring ou nettoyage probable — **signal positif** |
-| < 0.3 | Suppressions très importantes | 🔧 Refactoring majeur ou nettoyage de dette technique — **à valoriser** |
+| `deletions = 0` | Cas particulier : ajout pur (ratio non défini / ∞ si `insertions > 0`) | 📝 Ajout de fonctionnalités possible ; à distinguer d'un simple ratio `> 5.0` |
+| > 5.0 *(si `deletions > 0`)* | Beaucoup plus d'ajouts que de suppressions | 📝 Ajout de fonctionnalités ou copier-coller — vérifier |
+| 1.0 – 5.0 *(si `deletions > 0`)* | Équilibre normal | ✅ Travail productif standard |
+| 0.3 – 1.0 *(si `deletions > 0`)* | Plus de suppressions que d'ajouts | 🔧 Refactoring ou nettoyage probable — **signal positif** |
+| < 0.3 *(si `deletions > 0`)* | Suppressions très importantes | 🔧 Refactoring majeur ou nettoyage de dette technique — **à valoriser** |
 
 ### Application dans la note
 
