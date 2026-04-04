@@ -96,32 +96,73 @@ def detect_suspicious_patterns(commits: list[dict], dates: list[datetime]) -> li
             count = 3
             while i + count < len(messages) and messages[i + count] == msg:
                 count += 1
+            excerpt = commits[i]["message"][:50].strip().replace("\n", " ").replace("\r", "").replace('"', "'")
             questions.append(
-                f"❓ {count} commits consécutifs avec un message identique (\"{commits[i]['message'][:50]}\") "
+                f"❓ {count} commits consécutifs avec un message identique (\"{excerpt}\") "
                 f"— ce message décrit-il vraiment {count} changements distincts ?"
             )
             i += count
         else:
             i += 1
 
-    # 2. Micro-commits : séries de commits avec < 5 lignes modifiées
-    micro_commits = [c for c in commits if (c["insertions"] + c["deletions"]) < 5 and (c["insertions"] + c["deletions"]) > 0]
-    if len(micro_commits) >= 5:
+    # 2. Micro-commits : séries consécutives de commits avec < 5 lignes modifiées
+    micro_commit_run_threshold = 5
+    run_start = None
+    run_length = 0
+
+    for idx, commit in enumerate(commits):
+        changed_lines = commit["insertions"] + commit["deletions"]
+        is_micro_commit = 0 < changed_lines < 5
+
+        if is_micro_commit:
+            if run_length == 0:
+                run_start = idx
+            run_length += 1
+        else:
+            if run_length >= micro_commit_run_threshold:
+                run_excerpt = commits[run_start]["message"][:50].strip().replace("\n", " ").replace("\r", "").replace('"', "'")
+                questions.append(
+                    f"❓ {run_length} micro-commits consécutifs détectés (< 5 lignes modifiées chacun) "
+                    f"(à partir de \"{run_excerpt}\") "
+                    f"— s'agit-il d'un découpage intentionnel du travail ou d'une séquence de corrections ?"
+                )
+            run_start = None
+            run_length = 0
+
+    if run_length >= micro_commit_run_threshold:
+        run_excerpt = commits[run_start]["message"][:50].strip().replace("\n", " ").replace("\r", "").replace('"', "'")
         questions.append(
-            f"❓ {len(micro_commits)} micro-commits détectés (< 5 lignes modifiées chacun) "
+            f"❓ {run_length} micro-commits consécutifs détectés (< 5 lignes modifiées chacun) "
+            f"(à partir de \"{run_excerpt}\") "
             f"— s'agit-il d'un découpage intentionnel du travail ou d'une séquence de corrections ?"
         )
 
     # 3. Burst > 10 commits en < 30 minutes
-    if len(dates) >= 10:
+    burst_window_minutes = 30
+    min_burst_commits = 11  # strictement > 10 commits
+    if len(dates) >= min_burst_commits:
         dates_sorted = sorted(dates)
-        for i in range(len(dates_sorted) - 9):
-            window = dates_sorted[i:i + 10]
-            delta_minutes = (window[-1] - window[0]).total_seconds() / 60
-            if delta_minutes < 30:
+        for i in range(len(dates_sorted) - min_burst_commits + 1):
+            burst_end = i
+            while (
+                burst_end + 1 < len(dates_sorted)
+                and (dates_sorted[burst_end + 1] - dates_sorted[i]).total_seconds() / 60 < burst_window_minutes
+            ):
+                burst_end += 1
+
+            burst_size = burst_end - i + 1
+            if burst_size >= min_burst_commits:
+                delta_minutes = (dates_sorted[burst_end] - dates_sorted[i]).total_seconds() / 60
+                if delta_minutes < 1:
+                    duration_text = "1 minute"
+                elif delta_minutes < 10:
+                    duration_text = f"{delta_minutes:.1f} minutes"
+                else:
+                    duration_text = f"{delta_minutes:.0f} minutes"
+
                 questions.append(
-                    f"❓ {len(window)}+ commits en moins de {delta_minutes:.0f} minutes "
-                    f"(autour du {window[0].strftime('%Y-%m-%d %H:%M')}) "
+                    f"❓ {burst_size} commits en moins de {duration_text} "
+                    f"(autour du {dates_sorted[i].strftime('%Y-%m-%d %H:%M')}) "
                     f"— ce backlog de commits correspond-il à du travail effectué progressivement ?"
                 )
                 break

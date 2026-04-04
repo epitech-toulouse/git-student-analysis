@@ -133,8 +133,7 @@ Ne pas utiliser seul pour calculer une note.
 - Fréquence : régulière / rush fin de projet / absente
 - Qualité des messages : ⭐⭐⭐ / ⭐⭐ / ⭐ / ⚠️ inexistants
 - Pertinence des modifications : <texte>
-- ⚠️ Alertes : ex. "10 commits en 2h avant deadline", "messages vides"
-- ❓ Questions à explorer : ex. "5 commits consécutifs avec message identique — s'agit-il de 5 changements distincts ?"
+- ⚠️ Alertes : ex. "10 commits en 2h avant deadline", "messages vides", "❓ 5 commits consécutifs avec message identique — s'agit-il de 5 changements distincts ?"
 
 [Identités fusionnées : ancien_email → email_canonique]
 ```
