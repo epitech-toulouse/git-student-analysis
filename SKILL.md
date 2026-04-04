@@ -85,9 +85,15 @@ Stratégie de déduplication :
 2. **Email générique** (`noreply`, etc.) → Grouper par **nom normalisé** (minuscules, sans accents)
 3. **Mapping manuel** (`mapping.csv`) → Priorité absolue : `email,nom_canonique`
 
+**Co-authorship (pair programming)** : Le script `extract_commits.sh` détecte automatiquement les trailers `Co-authored-by:` dans les messages de commit. Lorsqu'un co-auteur est détecté :
+- Les statistiques du commit (insertions, deletions) sont également attribuées au co-auteur
+- Le rapport doit mentionner explicitement : `🤝 Co-auteur sur N commits (pair programming détecté)`
+- Ne pas comptabiliser deux fois les commits dans le total global
+
 Signaler dans le rapport :
 - Les fusions réalisées (noms alternatifs détectés)
 - Le nom canonique choisi (le plus fréquent)
+- Les contributions en co-authorship détectées
 
 ---
 
