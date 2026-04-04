@@ -72,10 +72,10 @@ Diviser la durée totale du projet en 3 phases égales et analyser la contributi
 ### Format de présentation dans le rapport
 
 ```
-📈 Analyse temporelle (projet du <date_début> au <date_fin>) :
-- Phase 1 (<date_début> → <1/3>) : X commits (Y% du total étudiant)
-- Phase 2 (<1/3> → <2/3>) : X commits (Y% du total étudiant)  
-- Phase 3 (<2/3> → <date_fin>) : X commits (Y% du total étudiant)
+📈 Analyse temporelle (projet du `date_début` au `date_fin`) :
+- Phase 1 (`date_début` → `1/3`) : X commits (Y% du total étudiant)
+- Phase 2 (`1/3` → `2/3`) : X commits (Y% du total étudiant)  
+- Phase 3 (`2/3` → `date_fin`) : X commits (Y% du total étudiant)
 → Dynamique : montée en puissance / stable / décroissante / rush final
 ```
 
