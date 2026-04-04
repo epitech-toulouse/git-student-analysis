@@ -96,11 +96,13 @@ Diviser la durée totale du projet en 3 phases égales et analyser la contributi
 
 ```
 📈 Analyse temporelle (projet du `date_debut` au `date_fin`) :
-- Phase 1 (`date_debut` → `1/3`) : X commits (Y% du total étudiant)
-- Phase 2 (`1/3` → `2/3`) : X commits (Y% du total étudiant)  
-- Phase 3 (`2/3` → `date_fin`) : X commits (Y% du total étudiant)
+- Phase 1 (`date_debut` → `t_plus_1_tiers`) : X commits (Y% du total étudiant)
+- Phase 2 (`t_plus_1_tiers` → `t_plus_2_tiers`) : X commits (Y% du total étudiant)
+- Phase 3 (`t_plus_2_tiers` → `date_fin`) : X commits (Y% du total étudiant)
 → Dynamique : montée en puissance / stable / décroissante / rush final
 ```
+
+Convention de bornes : `date_debut <= commit < t_plus_1_tiers` (phase 1), `t_plus_1_tiers <= commit < t_plus_2_tiers` (phase 2), `t_plus_2_tiers <= commit <= date_fin` (phase 3). `t_plus_1_tiers` et `t_plus_2_tiers` sont les dates calculées respectivement à +1/3 et +2/3 de la durée totale du projet.
 
 ---
 
