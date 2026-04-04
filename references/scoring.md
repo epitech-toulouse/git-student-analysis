@@ -59,3 +59,33 @@ Calculer : `commits_par_semaine = total_commits / max(1, nb_semaines_projet)`
 | 0 commit | 🔴 Pas de contribution détectée |
 
 Afficher aussi : date du 1er commit et date du dernier commit par étudiant.
+
+---
+
+## Ratio insertions/deletions — détection du refactoring
+
+### Principe
+
+Le ratio `insertions / max(1, deletions)` est un indicateur de la nature du travail effectué. Il complète le LOA brut et évite de pénaliser le refactoring.
+
+### Interprétation du ratio
+
+| Ratio | Interprétation | Signal |
+|---|---|---|
+| > 5.0 | Beaucoup plus d'ajouts que de suppressions | 📝 Ajout de fonctionnalités ou copier-coller — vérifier |
+| 1.0 – 5.0 | Équilibre normal | ✅ Travail productif standard |
+| 0.3 – 1.0 | Plus de suppressions que d'ajouts | 🔧 Refactoring ou nettoyage probable — **signal positif** |
+| < 0.3 | Suppressions très importantes | 🔧 Refactoring majeur ou nettoyage de dette technique — **à valoriser** |
+
+### Application dans la note
+
+**Un ratio deletions élevé ne doit PAS être pénalisé.** Le refactoring est souvent signe d'une meilleure maîtrise du code :
+- Supprimer 1000 lignes pour en écrire 300 meilleures = travail de qualité
+- Nettoyer de la dette technique = contribution précieuse au projet
+
+**Formulation recommandée dans le rapport :**
+```
+🔧 Ratio suppressions élevé (ratio: 0.3) sur N commits — peut indiquer du refactoring de qualité (à vérifier avec les messages de commit et les diffs).
+```
+
+**Ne jamais écrire :** `"Bob a moins de lignes ajoutées que les autres"` sans mentionner le contexte de ses deletions.

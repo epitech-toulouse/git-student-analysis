@@ -102,6 +102,7 @@ Signaler dans le rapport :
 | **Fréquence** | commits / durée_projet_jours ; détecter les rushes |
 | **Qualité messages** | Score 0–3 (voir `references/scoring.md`) |
 | **Pertinence modifications** | Appréciation qualitative (voir `references/scoring.md`) |
+| **Ratio insertions/deletions** | insertions / max(1, deletions) — signale le refactoring |
 
 ---
 
@@ -122,6 +123,7 @@ Le script `run_analysis.sh` génère automatiquement le rapport à la racine du 
 ### 👤 <Prénom Nom> (<email_canonique>)
 - Commits : X (Y%)
 - Lignes : +Z / -W  |  Fichiers distincts : N
+- Ratio insertions/deletions : X.X → [🔧 refactoring probable si ratio < 0.5] [📝 ajout net si ratio > 3]
 - Fréquence : régulière / rush fin de projet / absente
 - Qualité des messages : ⭐⭐⭐ / ⭐⭐ / ⭐ / ⚠️ inexistants
 - Pertinence des modifications : <texte>
