@@ -10,9 +10,7 @@
 
 ## ⚡ Installation rapide
 
-```bash
-npx skills add Nico-TekToulouse/git-student-analysis-copilot -g -a github-copilot
-```
+Voir [🚀 Installation → Via skills CLI](#via-skills-cli-recommandée) ci-dessous.
 
 ## 📖 Description
 
