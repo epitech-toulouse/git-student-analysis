@@ -1,6 +1,6 @@
 # 🎓 Git Student Analysis - Copilot CLI Skill
 
-[![Install with skills CLI](https://img.shields.io/badge/skills.sh-install-blue?logo=github)](https://skills.sh/Nico-TekToulouse/git-student-analysis-copilot)
+[![Install with skills CLI](https://img.shields.io/badge/skills.sh-install-blue?logo=github)](https://skills.sh/Nico-TekToulouse/git-student-analysis)
 [![Agent Skills](https://img.shields.io/badge/agent--skills-compatible-green)](https://github.com/vercel-labs/skills)
 [![Copilot CLI](https://img.shields.io/badge/Copilot-CLI-blue?logo=github)](https://github.com/features/copilot)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -26,7 +26,7 @@ Ce skill pour **GitHub Copilot CLI** permet aux enseignants et formateurs d'anal
 ### Via skills CLI (Recommandée)
 
 ```bash
-npx skills add Nico-TekToulouse/git-student-analysis-copilot -g -a github-copilot
+npx skills add Nico-TekToulouse/git-student-analysis -g -a github-copilot
 ```
 
 ### Installation manuelle (Alternative)
@@ -39,7 +39,7 @@ mkdir -p ~/.copilot/skills
 
 # Cloner le skill
 cd ~/.copilot/skills
-git clone https://github.com/[votre-username]/git-student-analysis-copilot.git git-student-analysis
+git clone https://github.com/[votre-username]/git-student-analysis.git git-student-analysis
 
 # Vérifier l'installation
 ls ~/.copilot/skills/git-student-analysis
@@ -53,7 +53,7 @@ Pour utiliser le skill uniquement dans un projet spécifique :
 # Dans le dossier racine de votre projet
 mkdir -p .github/skills
 cd .github/skills
-git clone https://github.com/[votre-username]/git-student-analysis-copilot.git git-student-analysis
+git clone https://github.com/[votre-username]/git-student-analysis.git git-student-analysis
 ```
 
 ### Vérification
@@ -267,7 +267,7 @@ Vous n'avez **rien à installer manuellement** ! 🎉
 ## 📁 Structure du Projet
 
 ```
-git-student-analysis-copilot/
+git-student-analysis/
 ├── skill.yaml              # Configuration Copilot CLI
 ├── SKILL.md               # Instructions détaillées pour l'agent
 ├── README.md              # Ce fichier
@@ -348,7 +348,7 @@ Ce projet est sous licence [MIT](LICENSE) - vous êtes libre de l'utiliser, le m
 
 Des questions ? Des suggestions ?
 
-- Ouvrez une [Issue](https://github.com/[votre-username]/git-student-analysis-copilot/issues)
+- Ouvrez une [Issue](https://github.com/[votre-username]/git-student-analysis/issues)
 - Consultez la [documentation complète](SKILL.md)
 - Rejoignez les discussions GitHub
 
