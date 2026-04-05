@@ -1,4 +1,4 @@
-# 📚 Analyse Pédagogique — `git-student-analysis-copilot`
+# 📚 Analyse Pédagogique — `git-student-analysis`
 
 > Rapport rédigé suite à une analyse critique du skill du point de vue pédagogique.  
 > Date : 2026-04-04

@@ -13,7 +13,7 @@
 
 ```bash
 # Copier le skill dans le dossier global
-cp -r git-student-analysis-copilot ~/.copilot/skills/git-student-analysis
+cp -r git-student-analysis ~/.copilot/skills/git-student-analysis
 
 # Rendre les scripts exécutables
 chmod +x ~/.copilot/skills/git-student-analysis/scripts/*.sh
@@ -26,7 +26,7 @@ Le skill sera accessible depuis **n'importe quel dossier** dans votre terminal.
 ```bash
 # Depuis la racine de votre projet
 mkdir -p .github/skills
-cp -r git-student-analysis-copilot .github/skills/git-student-analysis
+cp -r git-student-analysis .github/skills/git-student-analysis
 chmod +x .github/skills/git-student-analysis/scripts/*.sh
 ```
 
@@ -36,11 +36,11 @@ Le skill sera accessible uniquement pour **ce projet spécifique**.
 
 ```bash
 # Installation globale
-git clone https://github.com/Nico-TekToulouse/git-student-analysis-copilot.git \
+git clone https://github.com/Nico-TekToulouse/git-student-analysis.git \
   ~/.copilot/skills/git-student-analysis
 
 # Installation par projet
-git clone https://github.com/Nico-TekToulouse/git-student-analysis-copilot.git \
+git clone https://github.com/Nico-TekToulouse/git-student-analysis.git \
   .github/skills/git-student-analysis
 ```
 
