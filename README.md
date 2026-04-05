@@ -1,10 +1,18 @@
 # 🎓 Git Student Analysis - Copilot CLI Skill
 
+[![Install with skills CLI](https://img.shields.io/badge/skills.sh-install-blue?logo=github)](https://skills.sh/Nico-TekToulouse/git-student-analysis-copilot)
+[![Agent Skills](https://img.shields.io/badge/agent--skills-compatible-green)](https://github.com/vercel-labs/skills)
 [![Copilot CLI](https://img.shields.io/badge/Copilot-CLI-blue?logo=github)](https://github.com/features/copilot)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](skill.yaml)
 
 > Analyse l'activité Git des étudiants sur un repository GitHub et produit un rapport pédagogique détaillé avec métriques et exports.
+
+## ⚡ Installation rapide
+
+```bash
+npx skills add Nico-TekToulouse/git-student-analysis-copilot -g -a github-copilot
+```
 
 ## 📖 Description
 
@@ -17,7 +25,13 @@ Ce skill pour **GitHub Copilot CLI** permet aux enseignants et formateurs d'anal
 
 ## 🚀 Installation
 
-### Installation Globale (Recommandée)
+### Via skills CLI (Recommandée)
+
+```bash
+npx skills add Nico-TekToulouse/git-student-analysis-copilot -g -a github-copilot
+```
+
+### Installation manuelle (Alternative)
 
 Le skill sera disponible dans tous vos projets :
 
