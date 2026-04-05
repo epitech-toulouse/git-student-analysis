@@ -7,6 +7,9 @@ description: >
   qualité des messages de commit, fréquence des commits par étudiant. Fonctionne avec une URL GitHub
   publique ou un répertoire déjà cloné en local. Produit systématiquement un rapport Markdown + un fichier
   Excel (.xlsx) exportable.
+metadata:
+  author: Nicolas Moreau
+  version: "1.0.0"
 ---
 
 # Git Student Analysis Skill
