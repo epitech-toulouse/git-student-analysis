@@ -50,7 +50,7 @@ echo ""
 
 # Étape 3: Générer le rapport Markdown
 echo -e "${YELLOW}3️⃣  Génération du rapport Markdown...${NC}"
-MD_OUTPUT="$REPO_ROOT/git-analysis-report-$DATE.md"
+MD_OUTPUT="$REPO_ROOT/git-analysis-report-$REPO_NAME-$DATE.md"
 "$PYTHON_BIN" "$SCRIPT_DIR/generate_md.py" "$TMP_DIR/analysis.json" "$REPO_NAME" "$MD_OUTPUT"
 if [ -f "$MD_OUTPUT" ]; then
     echo -e "${GREEN}✅ Rapport Markdown: $MD_OUTPUT${NC}"
@@ -61,7 +61,7 @@ echo ""
 
 # Étape 4: Générer le fichier Excel
 echo -e "${YELLOW}4️⃣  Génération du fichier Excel...${NC}"
-XLSX_OUTPUT="$REPO_ROOT/git-analysis-report-$DATE.xlsx"
+XLSX_OUTPUT="$REPO_ROOT/git-analysis-report-$REPO_NAME-$DATE.xlsx"
 "$PYTHON_BIN" "$SCRIPT_DIR/generate_xlsx.py" "$TMP_DIR/analysis.json" "$XLSX_OUTPUT"
 if [ -f "$XLSX_OUTPUT" ]; then
     echo -e "${GREEN}✅ Fichier Excel: $XLSX_OUTPUT${NC}"

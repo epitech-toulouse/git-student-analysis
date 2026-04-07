@@ -17,8 +17,8 @@ Fais-moi une analyse git du repo /Users/nicolasmoreau/Epitech/myTeamsReview/repo
 ```
 
 *Résultat attendu :*
-- Rapport Markdown : `/Users/nicolasmoreau/Epitech/myTeamsReview/repos/myteams-3/git-analysis-report-YYYY-MM-DD.md`
-- Fichier Excel : `/Users/nicolasmoreau/Epitech/myTeamsReview/repos/myteams-3/git-analysis-report-YYYY-MM-DD.xlsx`
+- Rapport Markdown : `/Users/nicolasmoreau/Epitech/myTeamsReview/repos/myteams-3/git-analysis-report-myteams-3-YYYY-MM-DD.md`
+- Fichier Excel : `/Users/nicolasmoreau/Epitech/myTeamsReview/repos/myteams-3/git-analysis-report-myteams-3-YYYY-MM-DD.xlsx`
 
 ---
 
@@ -60,8 +60,8 @@ Le skill s'occupe automatiquement de :
 **Avant (❌) :** Rapports dans `/tmp/` → difficiles à retrouver
 
 **Maintenant (✅) :** Rapports dans le dossier du projet analysé
-- `git-analysis-report-2026-04-04.md`
-- `git-analysis-report-2026-04-04.xlsx`
+- `git-analysis-report-myteams-3-2026-04-04.md`
+- `git-analysis-report-myteams-3-2026-04-04.xlsx`
 
 ---
 

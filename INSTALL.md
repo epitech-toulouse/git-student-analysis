@@ -85,8 +85,8 @@ Qui a contribué à ce projet ? Je veux voir les statistiques
 ```
 
 Le skill génère automatiquement :
-- `git-analysis-report-YYYY-MM-DD.md` - Rapport Markdown
-- `git-analysis-report-YYYY-MM-DD.xlsx` - Fichier Excel
+- `git-analysis-report-<student_name>-YYYY-MM-DD.md` - Rapport Markdown
+- `git-analysis-report-<student_name>-YYYY-MM-DD.xlsx` - Fichier Excel
 
 ## 🔧 Configuration Automatique
 
