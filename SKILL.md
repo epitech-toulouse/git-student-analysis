@@ -42,9 +42,12 @@ Si l'utilisateur n'a pas précisé, demander :
 ### Cas A — URL GitHub fournie
 
 ```bash
+# Extraire le username de l'étudiant depuis l'URL GitHub
+STUDENT_NAME=$(echo "<URL>" | cut -d'/' -f4)
+
 # Clone léger (sans fichiers binaires, historique complet)
-git clone --filter=blob:none <URL> /tmp/repo_analyse
-cd /tmp/repo_analyse
+git clone --filter=blob:none <URL> /tmp/$STUDENT_NAME
+cd /tmp/$STUDENT_NAME
 ```
 
 Si le clone échoue (repo privé, réseau), signaler à l'utilisateur qu'il doit fournir un chemin local cloné manuellement.
@@ -76,8 +79,8 @@ Ce script :
 5. Génère le fichier Excel **à la racine du repo analysé**
 
 **Outputs** (générés à la racine du projet) :
-- `git-analysis-report-YYYY-MM-DD.md` - Rapport Markdown
-- `git-analysis-report-YYYY-MM-DD.xlsx` - Fichier Excel
+- `git-analysis-report-<nom_repo>-YYYY-MM-DD.md` - Rapport Markdown
+- `git-analysis-report-<nom_repo>-YYYY-MM-DD.xlsx` - Fichier Excel
 
 ---
 
