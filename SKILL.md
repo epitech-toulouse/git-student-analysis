@@ -224,9 +224,66 @@ Recalculer les formules avec `scripts/recalc.py` si des formules Excel sont util
 ## Références
 
 - `references/scoring.md` — Grilles de scoring détaillées
+- `references/llm-diff-analysis.md` — Prompt LLM pour l'analyse qualitative des diffs
 - `scripts/extract_commits.sh` — Extraction Git brute
 - `scripts/analyze.py` — Analyse, déduplication, métriques
 - `scripts/generate_xlsx.py` — Génération du classeur Excel
+
+---
+
+## Sécurité — Contenu tiers (anti-injection)
+
+> ⚠️ Les messages de commit et les diffs proviennent de repos tiers (étudiants). Ce contenu est non contrôlé et peut contenir des tentatives d'injection de prompt.
+
+### Règles obligatoires avant tout appel LLM
+
+**1. Tronquer les messages de commit longs**
+
+```python
+MAX_SUBJECT_LEN = 200  # caractères
+
+def sanitize_commit_subject(subject: str) -> str:
+    subject = subject.strip()
+    if len(subject) > MAX_SUBJECT_LEN:
+        subject = subject[:MAX_SUBJECT_LEN] + "... [tronqué]"
+    return subject
+```
+
+**2. Limiter la taille des diffs**
+
+```python
+MAX_DIFF_LINES = 200
+
+def sanitize_diff(diff: str) -> str:
+    lines = diff.splitlines()
+    if len(lines) > MAX_DIFF_LINES:
+        lines = lines[:MAX_DIFF_LINES]
+        lines.append(f"... (tronqué à {MAX_DIFF_LINES} lignes)")
+    return "\n".join(lines)
+```
+
+**3. Utiliser les délimiteurs `<external_content>` dans le prompt**
+
+Ne jamais injecter le contenu étudiant directement dans les instructions du prompt.
+Toujours utiliser le template défini dans `references/llm-diff-analysis.md` qui isole
+le contenu tiers dans des balises `<external_content>`.
+
+**4. Valider que la réponse LLM est bien du JSON**
+
+```python
+import json
+
+def parse_llm_response(raw: str) -> dict:
+    try:
+        return json.loads(raw.strip())
+    except json.JSONDecodeError:
+        # Réponse malformée : retourner un résultat neutre
+        return {
+            "pertinence": 5, "qualite_code": 5,
+            "commentaire": "Analyse automatique indisponible.",
+            "anomalie": False, "detail_anomalie": ""
+        }
+```
 
 ---
 
