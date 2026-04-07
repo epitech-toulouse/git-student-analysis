@@ -163,7 +163,7 @@ Le skill **détecte automatiquement** ces trailers et attribue les contributions
 ...
 ```
 
-### 2. Fichier Excel (`git-analysis-report-YYYY-MM-DD.xlsx`)
+### 2. Fichier Excel (`git-analysis-report-<student_name>-YYYY-MM-DD.xlsx`)
 
 **Généré automatiquement à la racine du projet analysé.**
 
@@ -195,8 +195,8 @@ Au premier lancement :
 ### Localisation des Rapports
 
 Les rapports sont générés **à la racine du projet analysé** :
-- `git-analysis-report-YYYY-MM-DD.md` - Rapport Markdown
-- `git-analysis-report-YYYY-MM-DD.xlsx` - Fichier Excel
+- `git-analysis-report-<student_name>-YYYY-MM-DD.md` - Rapport Markdown
+- `git-analysis-report-<student_name>-YYYY-MM-DD.xlsx` - Fichier Excel
 
 **Plus besoin de chercher dans /tmp !** Les rapports sont directement dans votre projet.
 

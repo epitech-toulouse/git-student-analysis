@@ -43,11 +43,23 @@ Si l'utilisateur n'a pas précisé, demander :
 
 ```bash
 # Extraire le username de l'étudiant depuis l'URL GitHub
-STUDENT_NAME=$(echo "<URL>" | cut -d'/' -f4)
+# Support HTTPS (https://github.com/user/repo) et SSH (git@github.com:user/repo.git)
+if echo "<URL>" | grep -q '^git@'; then
+  STUDENT_NAME=$(echo "<URL>" | sed 's/git@[^:]*:\([^/]*\)\/.*/\1/')
+else
+  STUDENT_NAME=$(echo "<URL>" | cut -d'/' -f4)
+fi
+
+# Valider STUDENT_NAME (non vide, pas . ou .., caractères alphanumériques/tirets/underscores uniquement)
+if [ -z "$STUDENT_NAME" ] || [ "$STUDENT_NAME" = "." ] || [ "$STUDENT_NAME" = ".." ] || \
+   ! echo "$STUDENT_NAME" | grep -qE '^[a-zA-Z0-9_-]+$'; then
+  echo "Erreur : impossible d'extraire un nom d'étudiant valide depuis l'URL." >&2
+  exit 1
+fi
 
 # Clone léger (sans fichiers binaires, historique complet)
-git clone --filter=blob:none <URL> /tmp/$STUDENT_NAME
-cd /tmp/$STUDENT_NAME
+git clone --filter=blob:none <URL> "/tmp/$STUDENT_NAME"
+cd "/tmp/$STUDENT_NAME"
 ```
 
 Si le clone échoue (repo privé, réseau), signaler à l'utilisateur qu'il doit fournir un chemin local cloné manuellement.
@@ -79,8 +91,8 @@ Ce script :
 5. Génère le fichier Excel **à la racine du repo analysé**
 
 **Outputs** (générés à la racine du projet) :
-- `git-analysis-report-<nom_repo>-YYYY-MM-DD.md` - Rapport Markdown
-- `git-analysis-report-<nom_repo>-YYYY-MM-DD.xlsx` - Fichier Excel
+- `git-analysis-report-<student_name>-YYYY-MM-DD.md` - Rapport Markdown
+- `git-analysis-report-<student_name>-YYYY-MM-DD.xlsx` - Fichier Excel
 
 ---
 
@@ -146,7 +158,7 @@ Mentionner explicitement dans le rapport les progressions significatives :
 
 Le script `run_analysis.sh` génère automatiquement le rapport à la racine du projet analysé.
 
-**Emplacement** : `<repo_root>/git-analysis-report-YYYY-MM-DD.md`
+**Emplacement** : `<repo_root>/git-analysis-report-<student_name>-YYYY-MM-DD.md`
 
 **Important** : Le générateur actuel commence par le titre du rapport. L'avertissement ci-dessous doit être intégré directement au template et apparaître en tête du contenu du rapport, avant les sections d'analyse détaillées, afin de rester cohérent avec le format réellement produit.
 
