@@ -238,6 +238,7 @@ Le skill appliquera automatiquement la fusion.
 | **Fréquence** | Commits par jour, détection des "rushes" |
 | **Qualité messages** | Score 0-3 basé sur longueur, clarté, conventions |
 | **Pertinence** | Évaluation qualitative des modifications |
+| **🔒 Problèmes de sécurité** | Détection de fichiers/secrets compromettants |
 
 ### Scoring des Messages de Commit
 
@@ -247,6 +248,27 @@ Le skill évalue automatiquement la qualité :
 - ⭐⭐ (2/3) : Messages corrects mais améliorables
 - ⭐ (1/3) : Messages vagues ("fix", "update", "WIP")
 - ⚠️ (0/3) : Messages absents ou non-informatifs
+
+## 🔒 Détection de Sécurité
+
+Le skill inclut une **vérification automatique de sécurité** qui détecte les fichiers compromettants :
+
+### Problèmes Détectés
+
+- 🔴 **CRITICAL** : Fichiers `.env`, clés privées, tokens AWS/GitHub, URLs de BDD avec identifiants
+- 🟠 **HIGH** : Clés API, tokens JWT, configuration sensible (SSH, Docker, Firebase)
+
+### Utilisation
+
+```bash
+# Vérification directe
+python scripts/check_security.py <commits.tsv>
+
+# Mode strict (plus agressif)
+python scripts/check_security.py <commits.tsv> --strict
+```
+
+**📖 Documentation complète** : Voir [SECURITY_CHECKS.md](SECURITY_CHECKS.md)
 
 ## 🛠️ Dépendances
 
@@ -268,20 +290,22 @@ Vous n'avez **rien à installer manuellement** ! 🎉
 
 ```
 git-student-analysis/
-├── skill.yaml              # Configuration Copilot CLI
-├── SKILL.md               # Instructions détaillées pour l'agent
-├── README.md              # Ce fichier
-├── LICENSE                # Licence MIT
+├── skill.yaml                  # Configuration Copilot CLI
+├── SKILL.md                   # Instructions détaillées pour l'agent
+├── README.md                  # Ce fichier
+├── SECURITY_CHECKS.md         # Documentation de la vérification de sécurité
+├── LICENSE                    # Licence MIT
 ├── .gitignore
 ├── scripts/
-│   ├── extract_commits.sh # Extraction des commits (bash)
-│   ├── analyze.py         # Analyse et déduplication (python)
-│   ├── generate_md.py     # Génération rapport Markdown
-│   └── generate_xlsx.py   # Génération fichier Excel
+│   ├── extract_commits.sh     # Extraction des commits (bash)
+│   ├── analyze.py             # Analyse et déduplication (python)
+│   ├── check_security.py      # Vérification de fichiers compromettants 🔒
+│   ├── generate_md.py         # Génération rapport Markdown
+│   └── generate_xlsx.py       # Génération fichier Excel
 └── references/
-    ├── scoring.md         # Documentation du scoring
-    ├── commit-scoring.md  # Critères d'évaluation
-    └── llm-diff-analysis.md # Guide d'analyse LLM
+    ├── scoring.md             # Documentation du scoring
+    ├── commit-scoring.md      # Critères d'évaluation
+    └── llm-diff-analysis.md   # Guide d'analyse LLM
 ```
 
 ## ⚠️ Utilisation responsable

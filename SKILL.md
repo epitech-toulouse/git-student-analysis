@@ -221,12 +221,36 @@ Recalculer les formules avec `scripts/recalc.py` si des formules Excel sont util
 
 ---
 
+---
+
+## Étape 7.5 — Vérifier la Sécurité 🔒
+
+**Optionnel mais recommandé** : Lancer une vérification de sécurité pour détecter les fichiers compromettants.
+
+```bash
+python scripts/check_security.py commits_raw.tsv
+```
+
+Cette étape détecte :
+- Fichiers `.env` et variables d'environnement non confidentielles
+- Clés privées (RSA, SSH, PGP)
+- Tokens API, AWS, GitHub
+- URLs de bases de données avec identifiants
+- Configuration sensible (Firebase, Docker, OAuth)
+
+**Résultat** : Rapport texte avec problèmes CRITICAL et HIGH, exporté dans le rapport final.
+
+Pour plus de détails : voir [SECURITY_CHECKS.md](SECURITY_CHECKS.md)
+
+---
+
 ## Références
 
 - `references/scoring.md` — Grilles de scoring détaillées
 - `references/llm-diff-analysis.md` — Prompt LLM pour l'analyse qualitative des diffs
 - `scripts/extract_commits.sh` — Extraction Git brute
 - `scripts/analyze.py` — Analyse, déduplication, métriques
+- `scripts/check_security.py` — 🔒 Détection de fichiers compromettants
 - `scripts/generate_xlsx.py` — Génération du classeur Excel
 
 ---
