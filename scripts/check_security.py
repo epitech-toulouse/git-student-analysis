@@ -37,7 +37,7 @@ SENSITIVE_PATTERNS = {
         "description": "Clé privée détectée",
     },
     "api_keys": {
-        "pattern": r"(api[_-]?key|apikey|api[_-]?secret|secret[_-]?key|sk_live_|sk_test_|rk_live_|rk_test_|pk_live_|pk_test_)",
+        "pattern": r"(api[_-]?key|apikey|api[_-]?secret|secret[_-]?key)",
         "severity": "HIGH",
         "description": "Clé API ou token d'authentification",
     },
@@ -93,18 +93,49 @@ SENSITIVE_PATTERNS = {
     },
 }
 
+# Patterns supplémentaires activés uniquement en mode --strict
+STRICT_PATTERNS = {
+    "password_in_code": {
+        "pattern": r"(password\s*=\s*['\"][^'\"]{3,}['\"]|passwd\s*=\s*['\"][^'\"]{3,}['\"])",
+        "severity": "HIGH",
+        "description": "Mot de passe en clair dans le code",
+    },
+    "ip_addresses": {
+        "pattern": r"\b(?:192\.168|10\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01]))\.\d+\b",
+        "severity": "HIGH",
+        "description": "Adresse IP privée exposée",
+    },
+    "generic_token": {
+        "pattern": r"(token\s*=\s*['\"][A-Za-z0-9_\-]{20,}['\"]|secret\s*=\s*['\"][A-Za-z0-9_\-]{20,}['\"])",
+        "severity": "HIGH",
+        "description": "Token ou secret générique potentiel",
+    },
+}
 
-def check_file_path(filepath: str) -> list:
+
+def check_file_path(filepath: str, strict: bool = False) -> list:
     """Vérifie les patterns dans le chemin du fichier."""
     issues = []
     filepath_lower = filepath.lower()
+    # Le nom de fichier seul (sans répertoire), pour les patterns avec ancres ^ $
+    filename_lower = Path(filepath).name.lower()
 
-    for check_id, check in SENSITIVE_PATTERNS.items():
-        if re.search(check["pattern"], filepath_lower, re.IGNORECASE):
+    patterns = dict(SENSITIVE_PATTERNS)
+    if strict:
+        patterns.update(STRICT_PATTERNS)
+
+    for check_id, check in patterns.items():
+        # env_files utilise des ancres ^ et $ → matcher sur le nom de fichier seul
+        target = filename_lower if check_id == "env_files" else filepath_lower
+        if re.search(check["pattern"], target, re.IGNORECASE):
+            severity = check["severity"]
+            # En mode strict, les HIGH deviennent CRITICAL
+            if strict and severity == "HIGH":
+                severity = "CRITICAL"
             issues.append(
                 {
                     "type": check_id,
-                    "severity": check["severity"],
+                    "severity": severity,
                     "description": check["description"],
                     "location": "filename",
                 }
@@ -113,31 +144,43 @@ def check_file_path(filepath: str) -> list:
     return issues
 
 
-def check_content(filename: str, content: str) -> list:
-    """Vérifie les patterns dans le contenu du fichier (résumé)."""
+def check_content(filename: str, content: str, already_found: set = None, strict: bool = False) -> list:
+    """Vérifie les patterns dans le contenu d'un texte (message de commit ou diff).
+
+    already_found: ensemble de check_id déjà détectés via check_file_path pour éviter les doublons.
+    """
     issues = []
-    
+    if already_found is None:
+        already_found = set()
+
     # Ne check pas les fichiers binaires ou trop volumineux
     try:
         if len(content) > 100000 or "\x00" in content[:1000]:
             return issues
-    except:
+    except Exception:
         return issues
 
     content_lower = content.lower()
 
-    for check_id, check in SENSITIVE_PATTERNS.items():
+    patterns = dict(SENSITIVE_PATTERNS)
+    if strict:
+        patterns.update(STRICT_PATTERNS)
+
+    for check_id, check in patterns.items():
+        if check_id in already_found:
+            continue
         if re.search(check["pattern"], content_lower, re.IGNORECASE):
-            # Évite les doubles: api_keys est souvent dans le chemin
-            if check_id == "api_keys" and "filename" not in str(issues):
-                issues.append(
-                    {
-                        "type": check_id,
-                        "severity": check["severity"],
-                        "description": check["description"],
-                        "location": "content",
-                    }
-                )
+            severity = check["severity"]
+            if strict and severity == "HIGH":
+                severity = "CRITICAL"
+            issues.append(
+                {
+                    "type": check_id,
+                    "severity": severity,
+                    "description": check["description"],
+                    "location": "content",
+                }
+            )
 
     return issues
 
@@ -163,11 +206,14 @@ def analyze_commits(commits_file: str, strict: bool = False) -> dict:
                 # Parse les fichiers (séparés par |)
                 file_list = [f.strip() for f in files.split("|") if f.strip()]
 
+                commit_has_issues = False
+                found_types: set = set()
                 for filepath in file_list:
-                    # Vérification du chemin
-                    path_issues = check_file_path(filepath)
+                    path_issues = check_file_path(filepath, strict=strict)
                     if path_issues:
+                        commit_has_issues = True
                         for issue in path_issues:
+                            found_types.add(issue["type"])
                             security_issues[author].append(
                                 {
                                     "commit": commit_hash,
@@ -177,9 +223,19 @@ def analyze_commits(commits_file: str, strict: bool = False) -> dict:
                                 }
                             )
 
-                    # Note: l'analyse de contenu nécessiterait d'accéder aux vrais diffs
-                    # qui ne sont pas disponibles dans ce format TSV simplifié
-                    # Les patterns de contenu peuvent être ajoutés si les diffs sont fournis
+                # Analyse du message de commit pour détecter des secrets exposés
+                message_issues = check_content("commit_message", message, already_found=found_types, strict=strict)
+                if message_issues:
+                    commit_has_issues = True
+                    for issue in message_issues:
+                        security_issues[author].append(
+                            {
+                                "commit": commit_hash,
+                                "date": date,
+                                "file": "(commit message)",
+                                "issue": issue,
+                            }
+                        )
 
                 commits_by_author[author].append(
                     {
@@ -187,7 +243,7 @@ def analyze_commits(commits_file: str, strict: bool = False) -> dict:
                         "date": date,
                         "message": message,
                         "files": file_list,
-                        "has_issues": len(path_issues) > 0,
+                        "has_issues": commit_has_issues,
                     }
                 )
 
@@ -236,20 +292,32 @@ def format_report(analysis: dict) -> str:
 
 def main():
     if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <commits_tsv> [--strict]", file=sys.stderr)
+        print(f"Usage: {sys.argv[0]} <commits_tsv> [--strict] [--output <file.json>]", file=sys.stderr)
         sys.exit(1)
 
     commits_file = sys.argv[1]
     strict = "--strict" in sys.argv
 
+    output_file = None
+    if "--output" in sys.argv:
+        idx = sys.argv.index("--output")
+        if idx + 1 < len(sys.argv):
+            output_file = sys.argv[idx + 1]
+        else:
+            print("Error: --output requires a file path argument", file=sys.stderr)
+            sys.exit(1)
+
     analysis = analyze_commits(commits_file, strict)
 
-    # Affiche le rapport
+    # Affiche le rapport lisible sur stdout
     report = format_report(analysis)
     print(report)
 
-    # Retourne les données en JSON sur stderr pour intégration
-    print(json.dumps(analysis, indent=2), file=sys.stderr)
+    # Exporte les données JSON dans un fichier si --output est spécifié
+    if output_file:
+        with open(output_file, "w") as f:
+            json.dump(analysis, f, indent=2)
+        print(f"📄 Rapport JSON exporté : {output_file}", file=sys.stderr)
 
     # Retourne un code d'erreur si des problèmes critiques sont trouvés
     critical_count = sum(

@@ -221,8 +221,6 @@ Recalculer les formules avec `scripts/recalc.py` si des formules Excel sont util
 
 ---
 
----
-
 ## Étape 7.5 — Vérifier la Sécurité 🔒
 
 **Optionnel mais recommandé** : Lancer une vérification de sécurité pour détecter les fichiers compromettants.
@@ -232,7 +230,7 @@ python scripts/check_security.py commits_raw.tsv
 ```
 
 Cette étape détecte :
-- Fichiers `.env` et variables d'environnement non confidentielles
+- Fichiers `.env` et variables d'environnement confidentielles
 - Clés privées (RSA, SSH, PGP)
 - Tokens API, AWS, GitHub
 - URLs de bases de données avec identifiants
