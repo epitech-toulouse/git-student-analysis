@@ -188,6 +188,19 @@ Ne pas utiliser seul pour calculer une note.
 - ⚠️ Alertes : ex. "10 commits en 2h avant deadline", "messages vides", "❓ 5 commits consécutifs avec message identique — s'agit-il de 5 changements distincts ?"
 
 [Identités fusionnées : ancien_email → email_canonique]
+
+## 🔒 Vérification de Sécurité
+
+✅ Aucun problème de sécurité détecté.
+
+<!-- OU si des problèmes sont trouvés :
+
+⚠️ Problèmes détectés :
+
+### 👤 <Prénom Nom>
+- 🔴 [CRITICAL] <type> — Fichier: <fichier> — Commit: <sha> — Date: <date>
+- 🟠 [HIGH] <type> — Fichier: <fichier> — Commit: <sha> — Date: <date>
+-->
 ```
 
 **Patterns suspects à signaler (comme questions, jamais comme accusations) :**
@@ -210,20 +223,9 @@ Recalculer les formules avec `scripts/recalc.py` si des formules Excel sont util
 
 ---
 
-## Étape 7 — Présenter les résultats
+## Étape 7 — Vérifier la Sécurité 🔒
 
-1. Afficher le rapport Markdown complet dans le chat
-2. Appeler `present_files` avec le `.xlsx`
-3. Proposer des actions de suivi :
-   - Filtrer sur une période précise
-   - Ajouter un mapping manuel d'identités
-   - Exporter seulement certains étudiants
-
----
-
-## Étape 7.5 — Vérifier la Sécurité 🔒
-
-**Optionnel mais recommandé** : Lancer une vérification de sécurité pour détecter les fichiers compromettants.
+**Obligatoire** : Lancer une vérification de sécurité pour détecter les fichiers et contenus compromettants dans l'historique Git.
 
 ```bash
 python scripts/check_security.py commits_raw.tsv
@@ -236,9 +238,23 @@ Cette étape détecte :
 - URLs de bases de données avec identifiants
 - Configuration sensible (Firebase, Docker, OAuth)
 
-**Résultat** : Rapport texte avec problèmes CRITICAL et HIGH, exporté dans le rapport final.
+**Résultat** : Le rapport de sécurité est **systématiquement inclus** dans le rapport Markdown final et dans l'onglet "Sécurité" du fichier Excel.
 
-Pour plus de détails : voir [SECURITY_CHECKS.md](SECURITY_CHECKS.md)
+- Si aucun problème n'est détecté → afficher `✅ Aucun problème de sécurité détecté`
+- Si des problèmes CRITICAL ou HIGH sont détectés → les lister par étudiant avec le niveau de sévérité, le fichier concerné et le commit
+
+Pour plus de détails sur les patterns détectés : voir [SECURITY_CHECKS.md](SECURITY_CHECKS.md)
+
+---
+
+## Étape 8 — Présenter les résultats
+
+1. Afficher le rapport Markdown complet dans le chat (incluant la section sécurité)
+2. Appeler `present_files` avec le `.xlsx` (incluant l'onglet "Sécurité")
+3. Proposer des actions de suivi :
+   - Filtrer sur une période précise
+   - Ajouter un mapping manuel d'identités
+   - Exporter seulement certains étudiants
 
 ---
 
